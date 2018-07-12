@@ -1,0 +1,34 @@
+@charset "UTF-8";
+*{box-sizing: border-box;}
+
+body, ol, ul, h1, h2, h3, h4, h5, h6, p, th, td, dl, dd, form, fieldset, legend, input, textarea, select, img {margin: 0;padding: 0;}
+audio, canvas,img,svg,video {max-width: 100%;vertical-align: middle;}
+body { font:12px/1.5 "Microsoft YaHei",tahoma,arial,Hiragino Sans GB,\5b8b\4f53;position: relative;-webkit-font-smoothing:antialiased}
+ul,li {list-style:none;}
+input,select,textarea{ font-size:100%;}
+input[type=text],input[type=password]{line-height: 28px\9;}
+table{border-collapse:collapse;border-spacing:0;}
+th{text-align:inherit;}
+q:before,q:after {content:'';}
+a{text-decoration:none;color: #333;}
+a:hover,a:focus {color: #333;text-decoration: none;}
+img,input{vertical-align: middle;border:0 none}
+.padd20{padding: 20px;}
+.mt20{margin-top: 20px !important;}
+.corfff{background-color: #fff;}
+.clearfix:after{clear:both;content: '';zoom: 1;display: block;}
+.fn-c:after{visibility:hidden;display:block;font-size:0;content:" ";clear:both;height:0;}
+.fn-c{zoom:1;}
+.fn-l,.fn-r{display:inline;}
+.fn-l{float: left !important;}
+.fn-r{float:right !important;}
+.fn-hide{display:none !important;}
+.tt-c{text-align: center !important;}
+.tt-l{text-align: left !important;}
+.tt-r{text-align: right !important;}
+.row:before,
+.row:after {display: table;content: " ";}
+.row:after { clear: both;*zoom:1}
+.tybtn{display: inline-block;padding: 0 25px;line-height: 26px;border: 1px solid #F7750A;border-radius: 4px;color: #F7750A;}
+.tybtn:hover{ background-color: #F7750A;color: #fff;}
+.okBtn{display: inline-block;padding: 8px 25px;border-radius: 4px;color: #fff;background-color: #F7750A;border: none;font-size:16px;cursor: pointer;}

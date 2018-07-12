@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<#include "/wap/common/top.html">
+		<title>${verification_0}</title>
+	</head>
+	<body class="bodybgf">
+		<input type="hidden" name="phone" id="phone" value="${phone}"/>
+		<div class="realTop">
+			<a href="javascript:history.back(-1)" class="return"><img src="/static-wap/images/hsBtn.jpg"/></a>
+			${verification_0}
+		</div>
+		<div class="heigh3"></div>
+		<ul class="upfileForm">
+			<li>
+				<label>${verification_4}</label>
+				<input readonly="readonly" type="text" id="realName" name="realName" value="${realName}"/>
+			</li>
+			<li>
+				<label>${verification_5}</label>
+				<input readonly="readonly" type="text" id="cardId" name="cardId" value="${cardId}" maxlength="18"/>
+			</li>
+		</ul>
+		<div class="upfilePic" style="padding: 2rem;">
+			<ul>
+				<li>
+					<span class="tip"><#if localLang??&&localLang=='en'>verificating<#else>審核中</#if></span>
+					<div class="bigImgbox">
+						<img id="imgFront" class="upFileImg" src="/auth/getimage?fileName=${cardId}a" alt="" />
+					</div>
+				</li>
+				<li>
+					<span class="tip"><#if localLang??&&localLang=='en'>verificating<#else>審核中</#if></span>
+					<div class="bigImgbox">
+						<img id="imgRear" class="upFileImg" src="/auth/getimage?fileName=${cardId}b" alt="" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="heigh5"></div>
+
+	
+	</body>
+</html>

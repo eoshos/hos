@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>提币-用户列表</title>
+</head>
+<body onload="loadBody()">
+	<button type="button" onclick="audit()">审核</button>
+	<button type="button" onclick="pass()">通过</button>
+	<button type="button" onclick="nopass()">不通过</button>
+</body>
+<script type="text/javascript">
+
+	function audit(){
+		window.location.href = '/withdraw/auditing';
+	}
+
+	function pass(){
+		window.location.href = '/withdraw/audited';
+	}
+	
+	function nopass(){
+		window.location.href = '/withdraw/auditfail';
+	}
+
+</script>
+</html>

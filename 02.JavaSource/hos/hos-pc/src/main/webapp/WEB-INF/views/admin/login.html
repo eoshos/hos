@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>EOSHOS</title>		
+		<#include "/admin/common/top.html">
+	</head>
+	<body>
+		<div class="indexMain">
+			<div class="header">
+				<a class="logo" href="/login/Bw8gJkU6YXj.html?lang="><img src="/static/images/logo.png"/></a>
+				<div class="logo_right">					
+					<a href="javascript:;" onclick="jumpEnroll()" class="log">${common1}</a><span>|</span><a href="javascript:;" onclick="jumpLogin()" class="landed">${common2}</a>
+					<div>
+					    <p><#if localLang??&&localLang=='en'>English<#else>繁體中文</#if><img src="/static/images/jt.png"/></p>
+					    <span>English</span>
+					    <span>繁體中文</span>
+					</div>
+				</div>
+			</div>
+			<div class="loginin">
+				<div class="indexTitle">
+					<h2><p>${common3_1}<br>${common3_2}</p></h2>
+					<p>${common5_1}${common5_2}${common5_3}${common5_4}${common5_5}</p>
+				</div>
+				<form action="" id="loginForm" autocomplete="off">
+					<ul>
+						<li><input type="tel" name="phone" maxlength="11" placeholder="${common6_1}" id="phone"/></li>
+						<li><input type="password" placeholder="${common18_2}" id="password" name="password"/><img class="eye" src="/static/images/eye.png"  alt="" /></li>						
+						<li><input type="text" id="valicode" name="valicode" placeholder="${common6_2}"  maxlength=4><img id="codeImg" src="/login/validimg.html" onclick="this.src='/login/validimg.html?t=' + Math.random();" alt="${common6_5}" /></li>
+						<div class="tips"></div>
+						<a href="/login/repassword.html?lang=" class="forget">${common13}</a>
+						<p class="btn" style="margin-top: 55px;"><a href="javascript:;" onclick="jumpEnroll()" class="land">${common6_3}</a><input type="submit" class="login" onclick="doSubmit()" value="${common2}"></p>
+					</ul>	
+				</form>
+			</div>
+			<div class="introduction">
+				<div>
+					<img src="/static/images/01.png" alt="" />
+					<h3>${common20}</h3>
+					<p>${common20_1}</p>
+				</div>
+				<div>
+					<img src="/static/images/02.png" alt="" />
+					<h3>${common21}</h3>
+					<p>${common21_1}<br>
+						${common21_2}<br>
+						${common21_3}
+					</p>
+				</div>
+				<div>
+					<img src="/static/images/03.png" alt="" />
+					<h3>${common22}</h3>
+					<p>${common22_1}<br>
+						${common22_2}<br>
+						${common22_3}</p>
+				</div>
+			</div>
+		</div>
+		<canvas id="bgCanvas"></canvas>
+		<script>
+			//localLang = "${localLang}";
+			var storage = window.localStorage;
+			if (!storage.getItem("localLang")){
+				storage.setItem("localLang", 'zh');
+			}
+			
+			var b=true;
+			$(".eye").click(function(){
+				if(b){
+					$(this).attr("src","/static/images/eyeopen.png");
+					$("input[name=password]").attr("type","text")
+				}else{
+					$(this).attr("src","/static/images/eye.png");
+					$("input[name=password]").attr("type","password")
+				}
+                b=!b;
+			})
+			$(".logo_right div").hover(function(){
+				$(this).css({"border":"1px solid #2e34f2","height":"105px"}).find("span").show();		
+			},function(){
+				$(this).css({"border":"none","height":"40px"}).find("span").hide();
+			})
+			$(".logo_right div span").click(function(){
+					var lang=$(this).html();
+					$(".logo_right").find("p").html(lang+"<img src='/static/images/jt.png'/>");
+					$(".logo_right div").css("border","none").find("span").hide();
+					if (lang == 'English'){
+						localLang = 'en';
+					} else {
+						localLang = 'zh';
+					}
+					var storage = window.localStorage;
+					storage.setItem("localLang", localLang);
+					window.location.href="/login/login.html?lang=" + localLang ;
+			})
+			//倒计时
+			function getpass(){		
+				var countDown = 60;		
+				$('.checktime').html(countDown + '秒後獲取').unbind('click').css({"background":"#0e1049","color":"#666"});
+				var timer = setInterval(function() {
+					countDown--;
+					if (countDown) {
+						$('.checktime').html(countDown + '秒後獲取');
+					} else {
+						clearInterval(timer);
+						countDown = parseInt($('#count-down').val());
+						$('.checktime').html('獲取驗證碼').bind("click",getpass).css({"background":"transparent","color":"#fff"});
+					}
+				}, 1000);
+			}	
+			$("#loginForm input").focus(function(){
+			 	$(this).parent().addClass("active");
+			 })
+		    $("#loginForm input").blur(function(){		 
+		    	if($(".error").is(':visible')){
+		    		$(this).parent().addClass("err")
+		    	}else{
+		    		$(this).parent().removeClass("err")
+		    		$(this).parent().removeClass("active");
+		    	}
+		    })
+			$("#loginForm").validate({
+				errorElement:"em",
+				debug:true,
+				 onkeydown:true,
+				   rules: {
+				      phone: {
+				        required: true,
+				        minlength: 11
+				      },
+				      valicode:"required",
+				      dxyzm:"required",
+				      password: {
+				        required: true,
+				        minlength: 6
+				      },
+				      check: "required"
+				    },
+				    messages: {
+				      phone:{
+				      	required:"请输入您的手机号码",
+				        minlength:"手机号码错误"
+				      },
+				      valicode: "请输入图形验证码",
+				      dxyzm: "请输入短信验证码",
+				      password: {
+				        required: "请输入密码",
+				        minlength: "密码长度不能小于 6 个字母"
+				      },			
+				      check: "请接受我们的协议",
+				    }
+				   })
+				   
+				
+			function doSubmit() {
+				if ($('#phone').val()==""){
+					return;
+				}
+				if ($('#valicode').val()==""){
+					return;
+				}
+				if ($('#password').val()==""){
+					return;
+				}
+				var hosUserDto = {};
+				hosUserDto.phone = $('#phone').val();
+				hosUserDto.password = $('#password').val();
+				hosUserDto.valicode = $('#valicode').val();
+				//console.log(JSON.stringify(hosUserDto));
+				var form = new FormData();
+		    	form.append("obj.phone", $('#phone').val());
+		    	form.append("obj.password", $('#password').val());
+		    	form.append("obj.valicode", $('#valicode').val());
+		    	$.ajax({
+		    		url: "/login/validate",
+		    	    type: "post",
+		    	    data: form,
+		    	    processData: false,
+		    	    contentType: false,
+		    	    success: function(data){
+		    	    	data=JSON.parse(data);
+		    	    	console.log(data);
+		    	    	if(data.errorCode == '0000'){
+		    	    		location='/homepage/index.html?lang='+window.localStorage.getItem("localLang");;
+		    	    	}else{
+		    	    		if(data.errorCode == '9998'){
+			        	 		$(".tips").html('${common30}');
+			        	 	}else if(data.errorCode == '9997'){
+			        	 		$(".tips").html('${common31}');
+			        	 	}else if(data.errorCode == '9996'){
+			        	 		$(".tips").html('${common32}');
+			        	 	}else if(data.errorCode == '9995'){
+			        	 		$(".tips").html('${common33}');
+			        	 	}else if(data.errorCode == '9994'){
+			        	 		$(".tips").html('${common34}');
+			        	 	}else if(data.errorCode == '9993'){
+			        	 		$(".tips").html('${common35}');
+			        	 	}else if(data.errorCode == '9992'){
+			        	 		$(".tips").html('${common36}');
+			        	 	}else if(data.errorCode == '9991'){
+			        	 		$(".tips").html('${common37}');
+			        	 	}else if(data.errorCode == '9990'){
+			        	 		$(".tips").html('${common38}');
+			        	 	}else if(data.errorCode == '9989'){
+			        	 		$(".tips").html('${common39}');
+			        	 	}else if(data.errorCode == '9988'){
+			        	 		$(".tips").html('${common18_1}');
+			        	 	}else if(data.errorCode == '9987'){
+			        	 		$(".tips").html('${common14}');
+			        	 	}else{
+			        	 		$(".tips").html("Exception of Request");
+			        	 	}
+		    	    	}
+		    	    }
+		    	});
+			}
+			
+			function jumpLogin(){
+				var storage = window.localStorage;
+				var lang = storage.getItem("localLang");
+				window.location.href="/login/login.html?lang="+lang;
+			}			
+			
+			function jumpEnroll(){
+				var storage = window.localStorage;
+				var lang = storage.getItem("localLang");
+				window.location.href="/enroll/index.html?lang="+lang;
+			}
+			
+			language($(".forget")) 
+			language($(".logo")) 
+		</script>
+	</body>
+</html>

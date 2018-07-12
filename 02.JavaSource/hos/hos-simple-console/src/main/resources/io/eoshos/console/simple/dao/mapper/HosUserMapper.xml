@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.eoshos.console.simple.dao.mapper.HosUserMapper">
+
+	<sql id="Base_Column_List">
+		user_type,phone,user_name,password,card_id,real_name,pic_path1,pic_path2,pic_path3,
+		real_stat,apply_auth_time,auth_time,eos_wallet,invite_user_id,invite_code,stat,oper_ip,gmt_created,gmt_modified
+	</sql>
+	
+	<sql id="Base_Column_List1">
+		user_type,phone,user_name,password,card_id,real_name,pic_path1,pic_path2,pic_path3,
+		real_stat,apply_auth_time,auth_time,eos_wallet,invite_user_id,invite_code
+	</sql>	
+	
+	<sql id="Insert_Column_List">
+		user_type,phone,user_name,password,card_id,real_name,pic_path1,pic_path2,pic_path3,
+		real_stat,apply_auth_time,auth_time,eos_wallet,invite_user_id,invite_code,stat,oper_ip,notes,gmt_created,gmt_modified
+	</sql>
+
+	<insert id="insert" parameterType="io.eoshos.console.simple.bean.po.HosUser"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into hos_user (<include refid="Insert_Column_List" />) values 
+		(
+		#{userType},#{phone},#{userName},#{password},#{cardId},#{realName},#{picPath1},
+		#{picPath2},#{picPath3},#{realStat},0,#{authTime},#{eosWallet},#{inviteUserId},
+		#{inviteCode},#{stat},#{operId},#{notes},unix_timestamp(sysdate()),0
+		)
+	</insert>
+
+	<update id="update" parameterType="io.eoshos.console.simple.bean.po.HosUser">
+		update hos_user
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="userType != null">
+				user_type = #{userType},
+			</if>
+			<if test="phone != null">
+				phone = #{phone},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="cardId != null">
+				card_id = #{cardId},
+			</if>
+			<if test="realName != null">
+				real_name = #{realName},
+			</if>
+			<if test="picPath1 != null">
+				pic_path1 = #{picPath1},
+			</if>
+			<if test="picPath2 != null">
+				pic_path2 = #{picPath2},
+			</if>
+			<if test="picPath3 != null">
+				pic_path3 = #{picPath3},
+			</if>
+			<if test="realStat != null">
+				real_stat = #{realStat},
+			</if>
+			<if test="applyAuthTime != null">
+				apply_auth_time = #{applyAuthTime},
+			</if>			
+			<if test="authTime != null">
+				auth_time = #{authTime},
+			</if>
+			<if test="eosWallet != null">
+				eos_wallet = #{eosWallet},
+			</if>
+			<if test="inviteUserId != null">
+				invite_user_id = #{inviteUserId},
+			</if>
+			<if test="inviteCode != null">
+				invite_code = #{inviteCode},
+			</if>
+			<if test="stat != null">
+				stat = #{stat},
+			</if>
+			<if test="operIp != null">
+				oper_ip = #{operIp},
+			</if>
+			<if test="notes != null">
+				notes = #{notes},
+			</if>			
+		</set>
+		where gmt_modified=#{gmtModified}
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="phone != null">
+			and phone = #{phone}
+		</if>
+		<if test="userName != null">
+			and user_name = #{userName}
+		</if>
+		<if test="inviteCode != null">
+			and invite_code = #{inviteCode}
+		</if>
+	</update>
+
+	<delete id="delete" parameterType="io.eoshos.console.simple.bean.dto.HosUserDto">
+		delete from hos_user where
+		phone = #{phone}
+	</delete>
+
+	<select id="getObject" parameterType="io.eoshos.console.simple.bean.dto.HosUserDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserVo">
+		select id, <include refid="Base_Column_List1" />
+		from hos_user
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="phone != null">
+			and phone = #{phone}
+		</if>
+		<if test="inviteCode != null">
+			and invite_code = #{inviteCode}
+		</if>		
+
+	</select>
+
+	<select id="listAllObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserVo">
+		select t1.id, <include refid="Base_Column_List1" />,
+		ifnull(t2.coin_total,0) coinTotal,
+		<!--ifnull(t3.inviteTotal,0) inviteTotal,-->
+		case t1.stat when '1' then '已生效' when '0' then '未生效' end  stat,
+		from_unixtime(t1.gmt_created, '%Y-%m-%d %H:%i:%S') gmtCreatedStr
+		from hos_user t1 
+		inner join hos_user_account t2 on t1.id=t2.user_id
+		<!--left join (select user_id,count(id) inviteTotal from hos_user_invite group by user_id) t3 on t1.id=t3.user_id-->
+		where 1=1
+		<if test="id != null">
+			and t1.id = #{id}
+		</if>
+		<if test="t1.phone != null">
+			and instr(t1.phone, #{phone}) > 0
+		</if>
+		<if test="beginDate != null">
+			and t1.gmt_created &gt;= #{beginDate}
+		</if>	
+		<if test="endDate != null">
+			and t1.gmt_created &lt;= #{endDate}
+		</if>		
+		order by t1.id 
+
+	</select>
+
+	<select id="listPagingObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserVo">
+		select t1.id, <include refid="Base_Column_List1" />,t1.notes,
+		ifnull(t2.coin_total,0) coinTotal,
+		<!--ifnull(t3.inviteTotal,0) inviteTotal,-->
+		case t1.stat when '1' then '已生效' when '0' then '未生效' end  stat,
+		from_unixtime(t1.gmt_created, '%Y-%m-%d %H:%i:%S') gmtCreatedStr,
+		from_unixtime(t1.gmt_modified, '%Y-%m-%d %H:%i:%S') gmtModifiedStr,
+		from_unixtime(t1.apply_auth_time, '%Y-%m-%d %H:%i:%S') applyAuthTimeStr,
+		from_unixtime(t1.auth_time, '%Y-%m-%d %H:%i:%S') authTimeStr		
+		from hos_user t1
+		inner join hos_user_account t2 on t1.id=t2.user_id
+		<!-- left join (select user_id,count(id) inviteTotal from hos_user_invite group by user_id) t3 on t1.id=t3.user_id -->
+		where 1=1
+		<if test="id != null">
+			and t1.id = #{id}
+		</if>
+		<if test="phone != null">
+			and instr(t1.phone, #{phone}) > 0
+		</if>
+		<if test="realStat != null">
+			and t1.real_stat = #{realStat}
+		</if>	
+		<if test="beginDate != null">
+			and t1.gmt_created &gt;= #{beginDate}
+		</if>	
+		<if test="endDate != null">
+			and t1.gmt_created &lt;= #{endDate}
+		</if>				
+		order by t1.id 
+		limit #{offset},#{limit}
+	</select>
+
+	<select id="countObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserDto"
+		resultType="java.lang.Integer">
+		select count(t1.id) from hos_user t1
+		inner join hos_user_account t2 on t1.id=t2.user_id
+		<!--inner join (select user_id,count(id) inviteTotal from hos_user_invite group by user_id) t3 on t1.id=t3.user_id-->		
+		where 1=1
+		<if test="id != null">
+			and t1.id = #{id}
+		</if>
+		<if test="phone != null">
+			and t1.phone = #{phone}
+		</if>
+		<if test="realStat != null">
+			and t1.real_stat = #{realStat}
+		</if>		
+		<if test="beginDate != null">
+			and t1.gmt_created &gt;= #{beginDate}
+		</if>	
+		<if test="endDate != null">
+			and t1.gmt_created &lt;= #{endDate}
+		</if>			
+	</select>
+
+</mapper>

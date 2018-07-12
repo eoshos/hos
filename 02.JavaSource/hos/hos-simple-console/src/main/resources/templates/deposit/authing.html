@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<#include "../common.html"/>
+		<title>实名认证</title>
+	</head>
+	<body>
+		<input hidden="hidden" type="text" id="userId" name="userId" value="${userId}">
+		<input hidden="hidden" type="text" id="gmtModified" name="gmtModified" value="${gmtModified}">
+		
+		<div class="rmsTc">
+			<form id="addForm" class="rmsTcForm">
+				<div class="iframeForm">
+					<ul class="formOne">	
+						<li class="con">
+							<div class="title"><span>姓名</span></div>
+							<div class="dataVal">${realName}</div>
+						</li>
+					</ul>	
+					<ul class="formOne">	
+						<li class="con">
+							<div class="title"><span>身份证号</span></div>
+							<div class="dataVal">${cardId}</div>
+						</li>
+					</ul>				
+					<ul class="formOne">	
+						<li class="con">
+							<div class="title"><span>身份证照片</span></div>
+							<div id="showImg" class="upfilePic">
+								<img modal="zoomImg" alt="身份证正面" src="https://eoshos.io/auth/getimage?fileName=${cardId}a"/>
+								<img modal="zoomImg" alt="身份证反面" src="https://eoshos.io/auth/getimage?fileName=${cardId}b"/>
+							</div>	
+						</li>
+					</ul>
+					<ul class="formOne">	
+						<li class="con">
+							<div class="title"><span>审核结果</span></div>
+							<div class="radioBox">
+								<label><input id="examine1" checked="checked" type="radio" name="examine" value="0"/><span>通过</span></label>
+								<label><input id="examine2" type="radio" name="examine" value="1"/><span>不通过</span></label>
+							</div>
+						</li>
+					</ul>
+					<ul isRadio="examine" class="formOne">	
+						<li class="con">
+							<div class="title"><span>问题定位</span></div>
+							<select id="select1" name="">
+								<option selected="selected" value="0">其他</option>
+								<option selected="selected" value="1">姓名</option>
+								<option selected="selected" value="2">身份证号</option>
+								<option selected="selected" value="3">身份证照片</option>
+							</select>
+						</li>
+					</ul>
+					<ul isRadio="examine" class="formOne">	
+						<li class="con">
+							<div class="title"><span>说明</span></div>
+							<textarea id="textarea1" name="info" rows="" cols=""></textarea>
+						</li>
+					</ul>
+				</div>
+			</form>
+			<div class="saveBtn">
+				<button type="button" class="save" onclick="doSubmit()">提交</button>
+			</div>		
+		</div>
+		<script type="text/javascript">
+			var len = $("[modal='zoomImg']").length;
+			var arrPic = new Array(); //定义一个数组
+			$(window).load(function() {
+				for (var i = 0; i < len; i++) {
+			    	var imgJson={
+						'src':$("[modal='zoomImg']").eq(i).prop('src'),
+						'alt':$("[modal='zoomImg']").eq(i).prop('alt'),
+						'height':$("[modal='zoomImg']").eq(i).height(),
+						'width':$("[modal='zoomImg']").eq(i).width()
+					}
+			    	arrPic.push(imgJson);
+				}
+			}); 
+			
+			$(function(){
+				$('#showImg [modal="zoomImg"]').click(function(){
+					var num=$(this).index();
+					parent.creatImg(arrPic,num,len);
+				});
+			})
+			$('[name=examine]').change(function(){
+				var name=$(this).attr('name');
+				console.log($(this).val());
+				if($(this).val()==0){
+					$('[isRadio='+name+']').hide();
+				}else{
+					$('[isRadio='+name+']').css('display','table-row');
+				}
+			});
+			
+			function doSubmit(){
+				var s1 = $("#select1").find("option:selected").text();
+				var s2 = $("#textarea1").val();
+				var s = s1 + ":" + s2;
+				var notes = $("#examine1").is(":checked") ? "认证通过" : s;
+				var realStat = "2";
+				if ($("#examine1").is(":checked")){
+					realStat = "2";
+				}
+				if ($("#examine2").is(":checked")){
+					realStat = "3";
+				}	
+				if (!realStat){
+					alert('请勾选审批意见!');
+					return;
+				}
+				
+	        	var url = "/deposit/auth?userId=" + $("#userId").val() + "&realStat=" + realStat + "&notes=" + notes + "&gmtModified=" + $("#gmtModified").val();
+	    		$.ajax({  
+	    	         url: url,  
+	    	         type: 'POST',  
+	    	         //data: form,  
+	    	         async: false,  
+	    	         success: function (data) {  
+	    	        	 console.log(data);
+	    	        	 var o = eval(data);
+	    	        	 if (o.errorCode == '0000'){
+	    	        		 layer.alert('操作成功');
+	    	        	 }else{
+	    	        		 layer.alert(o.errorMsg);
+	    	        	 }	    	        	 
+	    	        	 
+	    	         },  
+	    	         error: function (data) {  
+	    	        	 console.log(data); 
+	    	        	 var o = eval(data);
+	    	        	 //alert(o.errorMsg);
+	    	        	 layer.alert('操作失败');
+	    	         }  
+	    	    });
+	    		//layer.close(layer.index);//关闭弹窗
+	    		
+
+			}
+		</script>
+	</body>
+</html>

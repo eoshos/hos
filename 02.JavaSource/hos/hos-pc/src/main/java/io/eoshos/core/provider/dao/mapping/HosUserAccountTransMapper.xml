@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.eoshos.core.provider.dao.HosUserAccountTransMapper">
+
+	<sql id="Base_Column_List">
+		id,user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,gmt_created,gmt_modified
+	</sql>
+	
+	<sql id="Insert_Column_List">
+		user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,gmt_created,gmt_modified
+	</sql>
+
+	<insert id="insert" parameterType="io.eoshos.core.api.bean.po.HosUserAccountTrans"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into hos_user_account_trans (
+		<include refid="Insert_Column_List" />
+		) values (
+		#{userId},#{dcFlag},#{transType},#{otherUserId},#{coinNumber},#{coinBal},#{stat},unix_timestamp(sysdate()),unix_timestamp(sysdate())
+		)
+	</insert>
+
+	<update id="update" parameterType="io.eoshos.core.api.bean.po.HosUserAccountTrans">
+		update hos_user_account_trans
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="dcFlag != null">
+				dc_flag = #{dcFlag},
+			</if>
+			<if test="transType != null">
+				trans_type = #{transType},
+			</if>
+			<if test="otherUserId != null">
+				other_user_id = #{otherUserId},
+			</if>
+			<if test="coinNumber != null">
+				coin_number = #{coinNumber},
+			</if>
+			<if test="coinBal != null">
+				coin_bal = #{coinBal},
+			</if>
+			<if test="stat != null">
+				stat = #{stat},
+			</if>
+		</set>
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+	</update>
+
+	<delete id="delete" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountTransDto">
+		delete from hos_user_account_trans 
+		where user_id = #{userId}
+	</delete>
+
+	<select id="getObject" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountTransDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountTransVo">
+		select
+		<include refid="Base_Column_List" />
+		from hos_user_account_trans
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+
+	</select>
+
+	<select id="listAllObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountTransDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountTransVo">
+		select
+		<include refid="Base_Column_List" />,FROM_UNIXTIME(gmt_created, '%Y-%m-%d %H:%i:%S') as gmtCreatedStr 
+		from hos_user_account_trans
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		order by id desc
+
+	</select>
+
+	<select id="listPagingObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountTransDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountTransVo">
+		select
+		<include refid="Base_Column_List" />,FROM_UNIXTIME(gmt_created, '%Y-%m-%d %H:%i:%S') as gmtCreatedStr 
+		from hos_user_account_trans
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="gmtStart != null">
+			<![CDATA[ and gmt_created >= #{gmtStart} ]]>
+		</if>
+		<if test="gmtEnd != null">
+			<![CDATA[ and gmt_created <= #{gmtEnd} ]]>
+		</if>
+		order by id desc
+		limit #{offset},#{limit}
+	</select>
+
+	<select id="countObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountTransDto"
+		resultType="java.lang.Integer">
+		select count(id) from hos_user_account_trans
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="gmtStart != null">
+			<![CDATA[ and gmt_created >= #{gmtStart} ]]>
+		</if>
+		<if test="gmtEnd != null">
+			<![CDATA[ and gmt_created <= #{gmtEnd} ]]>
+		</if>
+	</select>
+
+</mapper>

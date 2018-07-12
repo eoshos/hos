@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.eoshos.core.provider.dao.HosUserAccountMapper">
+
+	<sql id="Base_Column_List">
+		id,user_id,coin_total,coin_available,coin_freeze,stat,gmt_created,gmt_modified
+	</sql>
+	
+	<sql id="Insert_Column_List">
+		user_id,coin_total,coin_available,coin_freeze,stat,gmt_created,gmt_modified
+	</sql>
+
+	<insert id="insert" parameterType="io.eoshos.core.api.bean.po.HosUserAccount"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into hos_user_account (
+		<include refid="Insert_Column_List" />
+		) values (
+		#{userId},#{coinTotal},#{coinAvailable},#{coinFreeze},#{stat},unix_timestamp(sysdate()),unix_timestamp(sysdate())
+		)
+	</insert>
+
+	<update id="update" parameterType="io.eoshos.core.api.bean.po.HosUserAccount">
+		update hos_user_account
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="stat != null">
+				stat = #{stat},
+			</if>
+		</set>
+		where gmt_modified = unix_timestamp(#{gmtModified}),
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+	</update>
+
+	<delete id="delete" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountDto">
+		delete from hos_user_account
+		where user_id = #{userId}
+	</delete>
+
+	<select id="getObject" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountVo">
+		select
+		<include refid="Base_Column_List" />, gmt_modified as gmtModifiedStr 
+		from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+
+	</select>
+
+	<select id="listAllObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountVo">
+		select
+		<include refid="Base_Column_List" />
+		from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		order by id desc
+
+	</select>
+
+	<select id="listPagingObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.core.api.bean.vo.HosUserAccountVo">
+		select
+		<include refid="Base_Column_List" />
+		from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		order by id desc
+		limit #{offset},#{limit}
+	</select>
+
+	<select id="countObjects" parameterType="io.eoshos.core.api.bean.dto.HosUserAccountDto"
+		resultType="java.lang.Integer">
+		select count(id) from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+	</select>
+
+	<update id="updateByTrade" parameterType="io.eoshos.core.api.bean.po.HosUserAccount">
+		<!-- 此处用coinToal暂存交易的币数 -->
+		update hos_user_account
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+				coin_total = #{coinTotal},
+				coin_available = #{coinAvailable},
+				coin_freeze = #{coinFreeze},
+		</set>
+		where gmt_modified = #{gmtModified}
+			and id = #{id} 
+			and user_id = #{userId} 
+			and #{coinTotal} >= 0 
+			and #{coinAvailable} >= 0 
+			and #{coinFreeze} >= 0 
+			and #{coinTotal} = #{coinAvailable} + #{coinFreeze}
+	</update>	
+
+</mapper>

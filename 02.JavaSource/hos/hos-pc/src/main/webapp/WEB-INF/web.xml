@@ -1,0 +1,177 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0" metadata-complete="true">
+
+	<context-param>
+		<param-name>isLog4jAutoInitializationDisabled</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<!-- 默认就会找这个文件，不需要额外配置引用 <context-param> <param-name>log4jConfiguration</param-name> 
+		<param-value>classpath:/log4j2.xml</param-value> </context-param> -->
+	<listener>
+		<listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>log4jServletFilter</filter-name>
+		<filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>log4jServletFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
+	
+	
+	<filter>  
+    	<description>跨域过滤器</description>  
+    	<filter-name>CORS</filter-name>    
+    	<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>    
+    	<init-param>    
+     		<param-name>cors.allowOrigin</param-name>    
+        	<param-value>*</param-value>    
+    	</init-param>    
+    	<init-param>    
+     		<param-name>cors.supportedMethods</param-name>    
+        	<param-value>GET, POST, HEAD, PUT, DELETE</param-value>    
+    	</init-param>    
+    	<init-param>    
+     		<param-name>cors.supportedHeaders</param-name>    
+        	<param-value>Accept, Origin, X-Requested-With, Content-Type, Last-Modified</param-value>    
+    	</init-param>    
+    	<init-param>    
+        	<param-name>cors.exposedHeaders</param-name>    
+        	<param-value>Set-Cookie</param-value>    
+    	</init-param>    
+    	<init-param>    
+        	<param-name>cors.supportsCredentials</param-name>    
+        	<param-value>true</param-value>    
+    	</init-param>    
+	</filter>  
+  
+    <filter-mapping>    
+    	<filter-name>CORS</filter-name>    
+    	<url-pattern>/*</url-pattern>    
+	</filter-mapping> 
+	<!-- 修改servlet版本为3.0 maven默认创建的为2.3不支持EL表达式 -->
+	<!-- 配置网站配置监听器 -->
+	<!-- <listener> <listener-class> com.chuangke18.tac.admin.listener.AdminContextListener 
+		</listener-class> </listener> -->
+	<!-- 配置Spring容器 -->
+	<!-- 先加载spring容器，对所有bean进行注入实例化再，再调用后面的监听器，这样就可以获取实例化后的bean实例，来访问数据库 -->
+	<!-- 从此规则可以推出listener的加载顺序是按web.xml的书写顺序进行依次加载 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring-context.xml</param-value>
+	</context-param>
+	
+	<!-- 可以在程序中通过 System.getProperty("hos.root") 获取 Web 应用的根目录了 -->
+	<context-param>  
+    	<param-name>webAppRootKey</param-name>  
+   		 <param-value>hos.root</param-value>  
+	</context-param>  	
+	<listener>  
+    	<listener-class>org.springframework.web.util.WebAppRootListener</listener-class>  
+	</listener> 	
+	
+
+	<!-- 在spring容器加载后进行启动，此时可以获取spring容器里面的所有实例 -->
+	<!--listener>
+		<listener-class>com.chuangke18.tac.admin.listener.SystemConfigListener</listener-class>
+	</listener-->
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+
+
+	<filter> 
+		<filter-name>AdminFilter</filter-name> 
+		<filter-class>io.eoshos.pc.filter.AdminFilter</filter-class> 
+	</filter> 
+	<filter-mapping> 
+		<filter-name>AdminFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping> 
+	
+	
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 配置Url重写过滤器 -->
+	<!--配置DispatcherServlet -->
+	<servlet>
+		<servlet-name>hos-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 配置springMVC需要加载的配置文件 spring-dao.xml,spring-service.xml,spring-web.xml 
+			Mybatis -> spring -> springMVC -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>hos-dispatcher</servlet-name>
+		<!--默认匹配所有的请求 -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<filter>
+		<filter-name>hiddenmethodfilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>hiddenmethodfilter</filter-name>
+		<servlet-name>dispatchers-name</servlet-name>
+	</filter-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.jpg</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.js</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.css</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.ttf</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.woff</url-pattern>
+	</servlet-mapping>
+
+
+	<welcome-file-list>
+		<welcome-file>/index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

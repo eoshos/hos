@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<#include "/wap/common/top.html">
+		<title>${verification_0}</title>
+	</head>
+	<body class="bodybgf">
+		<input type="hidden" name="phone" id="phone" value="${phone}"/>
+		<div class="realTop">
+			<a href="javascript:history.back(-1)" class="return"><img src="/static-wap/images/hsBtn.jpg"/></a>
+			${verification_0}
+		</div>
+		<div class="heigh3"></div>
+		<ul class="upfileForm">
+			<li>
+				<label>${verification_4}</label>
+				<input onblur="checkForm('realName')" type="text" name="realName"/>
+			</li>
+			<li>
+				<label>${verification_5}</label>
+				<input maxlength="18" onblur="checkForm('cardId')" type="text" name="cardId"/>
+			</li>
+		</ul>
+		<div class="upfilePic">
+			<div class="title">${verification_6}<span>${verification_7}</span></div>
+			<ul>
+				<li>
+					<div class="bigImgbox">
+						<input onchange="UpladFile(this)" type="file" name="faceCard" accept="image/gif,image/jpeg,image/png"/>
+						<input class="upFileVal" type="hidden" id="faceupFileVal" name="faceupFileVal"/>
+						<img id="imgFront" class="upFileImg" src="/static-wap/images/cardFace.jpg" alt="" />
+					</div>
+				</li>
+				<li>
+					<div class="bigImgbox">
+						<input onchange="UpladFile(this)" type="file" name="identityCard" accept="image/gif,image/jpeg,image/png"/>
+						<input class="upFileVal" type="hidden" id="identityupFileVal" name="identityupFileVal"/>
+						<img id="imgRear" class="upFileImg" src="/static-wap/images/cardIdentity.jpg" alt="" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="heigh5"></div>
+		<div class="submitBtn">
+			<button onclick="doSubmit()" type="button">${verification_0}</button>
+		</div>
+		
+		<script type="text/javascript">
+			//按语言喜好重定向
+			var storage = window.localStorage;
+			if (!storage.getItem("localLang")){
+				storage.setItem("localLang", 'en');
+			}		
+			var thisurl = window.location.href;
+			if (thisurl.indexOf(storage.getItem("localLang")) < 0){
+				window.location.href="/homepage/auth?devtype=wap&lang=" + storage.getItem("localLang");
+			}	
+		
+			var num=0;
+			var w=$('.upfilePic ul').width();
+			function UpladFile(obj) {
+	            var fileObj = obj.files[0];
+	            var imgSize=(fileObj.size/1024);
+	            if(imgSize>5120){
+	            	ck.msg({'content':'${verification_7}','time':1,'shade':false,'styleName':'msgWrite'});
+	            	obj.value = '';
+	            }else{
+	            	var scale=800/imgSize;
+	            	scale=parseFloat(scale.toFixed(1));
+	           		photoCompress(fileObj, {quality:scale,width:800},obj);
+	            }
+	        }
+			function doSubmit(){
+				if(!(checkForm('realName') && checkForm('cardId') && checkForm('faceupFileVal') && checkForm('identityupFileVal'))){
+					return;
+				}
+				
+				
+				//保存图片
+				/**
+				* 以下图片命名规则和后端java是一致的,如果有修改必须调整前后端		
+				* 身份证正面：身份证号码+a+文件后缀
+				* 身份证反面：身份证号码+b+文件后缀
+				*/
+		    	var cardId = $("input[name='cardId']").val().replace(/\s+/g,"");
+		    	var realName = $("input[name='realName']").val();
+		    	var file1 = $("#faceupFileVal").val();
+		    	var file2 = $("#identityupFileVal").val();
+		    	var imgName1 = cardId + 'a.jpg';
+		    	var imgName2 = cardId + 'b.jpg';
+		    	if (!file1 || !file2){
+		    		return;
+		    	}
+		    	//上传身份证正反面
+                var form = new FormData(); 
+                form.append("cardId", cardId);
+                form.append("realName", realName);
+		        form.append("file1", file1);
+		        form.append("file2", file2);
+		        form.append("fileName1", imgName1);
+		        form.append("fileName2", imgName2);
+	    		$.ajax({  
+	    	         url: "/auth/upload",  
+	    	         type: 'POST',  
+	    	         data: form,  
+	    	         async: false,  
+	    	         cache: false,  
+	    	         contentType: false,  
+	    	         processData: false,  
+	    	         success: function (data) {  
+	    	        	 ck.msg({'content':'${verification_9}','time':3,'shade':false,'styleName':'msgWrite'});	    	        	
+	    	        	 data=JSON.parse(data);
+	    	        	 if(data.errorCode == '0000'){
+	    	        		 location='/homepage/index.html?devtype=wap&lang='+window.localStorage.getItem("localLang");
+	    	        	 }else{
+	    	        		 if(data.errorCode == '9985'){
+	    	        			 ck.msg({'content':'${verification_2}','time':3,'shade':false,'styleName':'msgWrite'});	 
+				        	 }else if(data.errorCode == '9983'){
+				        		 ck.msg({'content':'${verification_1}','time':3,'shade':false,'styleName':'msgWrite'});	 
+				        	 }
+	    	        	 }
+	    	         },  
+	    	         error: function (data) {  
+	    	        	 console.log(data); 
+	    	         }  
+	    	    });
+ 	            
+				
+				console.log('提交成功！');
+			}
+		</script>
+	</body>
+</html>

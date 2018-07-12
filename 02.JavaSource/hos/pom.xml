@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.eoshos</groupId>
+  <artifactId>hos</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>hos</name>
+  <description>eoshos</description>
+  <modules>
+  	<module>hos-pc</module>
+  	<module>hos-wap</module>
+  	<module>hos-app</module>
+  	<module>hos-service</module>
+    <module>hos-simple-console</module>
+  </modules>
+</project>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN"  monitorInterval="1800">
+ 
+ <properties>
+		<property name="log_home">/home/ec2-user/logs</property>
+		<property name="file_error">admin-error</property>
+	</properties>
+<!-- Author:  Crunchify.com  -->
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT" ignoreExceptions="false">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t]  %F %M %l- %-5level %logger{36} %msg%n" />
+		</Console>
+
+		<RollingFile name="file_error" filename="${log_home}/${file_error}.log"
+			filepattern="${log_home}/${file_error}-%d{yyyy-MM-dd-HH}_%i.log">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" append="true"/>
+			<Policies>
+			 <OnStartupTriggeringPolicy />
+				 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            	<SizeBasedTriggeringPolicy size="50MB" />
+			</Policies>
+			<Filters>  
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>  
+            </Filters>  
+			<DefaultRolloverStrategy min="1" max="100"/>
+		</RollingFile>
+ 
+	</Appenders>
+	<Loggers>
+		<logger name="log4j.logger.java.sql" level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</logger>
+		<logger name="log4j.logger.java.sql.Connection" level="debug"
+			additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>
+		<logger name="org.activiti" level="debug"
+			additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>
+		<logger name="log4j.logger.java.sql.Statement" level="debug"
+			additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>
+		<logger name="log4j.logger.java.sql.PreparedStatement" level="debug"
+			additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>
+		<logger name="org.springframework" level="debug"
+			additivity="true">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>
+		<logger name="io.eoshos" level="error"
+			additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="file_error" />
+		</logger>		
+		<Root level="all">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="file_error"/>
+		</Root>
+	</Loggers>
+</Configuration>

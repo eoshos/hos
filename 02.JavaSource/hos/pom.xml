@@ -5,7 +5,7 @@
   <artifactId>hos</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>hos</name>
+  <name>hos</name> 
   <description>eoshos</description>
   <modules>
   	<module>hos-pc</module>

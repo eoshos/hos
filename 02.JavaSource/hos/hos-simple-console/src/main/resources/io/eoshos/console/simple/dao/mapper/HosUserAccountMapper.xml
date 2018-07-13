@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.eoshos.console.simple.dao.mapper.HosUserAccountMapper">
+
+	<sql id="Base_Column_List">
+		user_id,coin_total,coin_available,coin_freeze,stat,gmt_created,gmt_modified
+	</sql>
+	
+	<sql id="Insert_Column_List">
+		user_id,coin_total,coin_available,coin_freeze,stat,gmt_created,gmt_modified
+	</sql>
+
+	<insert id="insert" parameterType="io.eoshos.console.simple.bean.po.HosUserAccount"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into hos_user_account (
+		<include refid="Insert_Column_List" />
+		) values (
+		#{userId},#{coinTotal},#{coinAvailable},#{coinFreeze},#{stat},unix_timestamp(sysdate()),0
+		)
+	</insert>
+
+	<update id="update" parameterType="io.eoshos.console.simple.bean.po.HosUserAccount">
+		update hos_user_account
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="stat != null">
+				stat = #{stat},
+			</if>
+		</set>
+		where gmt_modified=#{gmtModified}
+		<if test="id != null">
+			and id = #{id}
+		</if>	
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>	
+	</update>
+	
+	<update id="updateCoin" parameterType="io.eoshos.console.simple.bean.po.HosUserAccount">
+		update hos_user_account
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			coin_total = #{coinTotal},
+			coin_available = #{coinAvailable},
+			coin_freeze = #{coinFreeze},
+		</set>
+		where gmt_modified=#{gmtModified}
+		and id = #{id}
+		and user_id = #{userId}
+		and #{coinTotal} >= 0
+		and #{coinAvailable} >= 0
+		and #{coinFreeze} >= 0
+		and #{coinTotal} = #{coinAvailable} + #{coinFreeze}
+	</update>	
+	
+	<!--update id="updateByTrade" parameterType="io.eoshos.console.simple.bean.po.HosUserAccount">
+		update hos_user_account
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="coinTotal != null">
+				coin_total = coin_total + #{coinTotal},
+				coin_available = coin_available + #{coinTotal},
+			</if>
+		</set>
+		where 1=1
+		and id = #{id}
+		and user_id = #{userId}
+	</update-->	
+
+	<delete id="delete" parameterType="io.eoshos.console.simple.bean.dto.HosUserAccountDto">
+		delete from hos_user_account
+		where user_id = #{userId}
+	</delete>
+
+	<select id="getObject" parameterType="io.eoshos.console.simple.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserAccountVo">
+		select	t1.id,t1.user_id,t1.coin_total,t1.coin_available,t1.coin_freeze,t1.stat,
+		t1.gmt_created,t1.gmt_modified,t2.real_stat,
+		from_unixtime(t1.gmt_created, '%Y-%m-%d %H:%i:%S') gmtCreatedStr,
+		from_unixtime(t1.gmt_modified, '%Y-%m-%d %H:%i:%S') gmtModifiedStr
+		from hos_user_account t1
+		left join hos_user t2 on t1.user_id=t2.id
+		where 1=1
+		<if test="id != null">
+			and t1.id = #{id}
+		</if>
+		<if test="userId != null">
+			and t1.user_id = #{userId}
+		</if>
+
+	</select>
+
+	<select id="listAllObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserAccountVo">
+		select id,<include refid="Base_Column_List" />
+		from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		order by id desc
+
+	</select>
+
+	<select id="listPagingObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserAccountDto"
+		resultType="io.eoshos.console.simple.bean.vo.HosUserAccountVo">
+		select id,<include refid="Base_Column_List" />
+		from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		order by id desc
+		limit #{offset},#{limit}
+	</select>
+
+	<select id="countObjects" parameterType="io.eoshos.console.simple.bean.dto.HosUserAccountDto"
+		resultType="java.lang.Integer">
+		select count(id) from hos_user_account
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+	</select>
+
+</mapper>

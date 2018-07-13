@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<#include "../common.html"/>
+		<title>批量充值</title>
+	</head>
+	<body>
+		<div class="rmsTc">
+		<form id="addForm" class="rmsTcForm">
+			<div class="iframeForm">
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">电话</div>
+						<textarea name="phones" id="phones" rows="12" cols="20"></textarea>						
+
+					</li>
+				</ul>			
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">充值金额</div>
+						<input class="w50" require="true" placeholder="请填写金额" type="text" name="coinNumber" id="coinNumber"/>
+						<span>HOS币</span>
+					</li>
+				</ul>	
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">备注</div>
+						<input require="false" placeholder="请填写备注" type="text" name="notes" id="notes"/>
+					</li>
+				</ul>				
+
+	
+			</div>
+		</form>
+		<div class="saveBtn">
+			<button type="button" class="save" onclick="submit()">提交</button>
+		</div>		
+		</div>
+		<script type="text/javascript">
+
+		    function submit(){
+		    	if (!$("#coinNumber").val()){
+		    		alert('充值金额不能为空!');
+		    		return;
+		    	}
+		    	if ($("#coinNumber").val()>1000){
+		    		alert('充值金额不能大于1000!');
+		    		return;
+		    	}		    	
+		    	
+				var form = new FormData();
+				form.append("phones", $("#phones").val());
+				form.append("coinNumber", $("#coinNumber").val());
+				form.append("notes", $("#notes").val());
+	    		$.ajax({  
+	   	            url: "/deposit/depositBatch",  
+	   	            type: 'POST',  
+	   	            data: form,  
+	   	            async: false,  
+	   	            cache: false,  
+	   	            contentType: false,  
+	   	            processData: false,  
+	   	            success: function (data) { 
+	   	            	alert('操作成功，请查看附件(未导入的名单)!');
+	   	        	    console.log(data);	
+	   	        	    var o = eval(data);
+	   	        	 	location.href="/deposit/downLoadFailedFile?content=" + o.errorMsg;
+	   	            },  
+	   	            error: function (data) {  
+	   	        	    console.log(data); 
+	   	            }  
+	   	    	});
+		    	 		            
+		    }
+		    
+		</script>
+	</body>
+</html>

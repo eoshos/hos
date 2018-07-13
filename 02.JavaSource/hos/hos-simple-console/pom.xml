@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.eoshos</groupId>
+    <artifactId>hos</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>io.eoshos</groupId>
+  <artifactId>hos-simple-console</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>hos-simple-console</name>
+  <description>简易后台</description>
+  <packaging>jar</packaging>
+
+  <properties>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <boot.version>1.4.3.RELEASE</boot.version> 
+	  <java.version>1.8</java.version>
+	  <mysql.connector.version>5.1.40</mysql.connector.version> 
+      <mybatis.version>3.2.8</mybatis.version> 
+      <mybatis.spring.version>1.2.2</mybatis.spring.version>  
+      <mybatis.spring.boot.version>1.1.1</mybatis.spring.boot.version>   
+      <druid.version>1.0.25</druid.version>  
+      <fastjson.version>1.2.17</fastjson.version>
+      <tomcat.jdbc.version>8.5.6</tomcat.jdbc.version>
+      <framework.api.version>0.0.1-SNAPSHOT</framework.api.version>  
+      <commons.lang.version>3.0</commons.lang.version>   
+      <log4j.api.version>2.10.0</log4j.api.version>   
+      <thumbnail.version>0.4.8</thumbnail.version>   
+  </properties>  
+  
+  <dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>${boot.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jdbc</artifactId>
+        <version>${boot.version}</version>
+    </dependency> 
+	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-freemarker</artifactId>
+		<version>${boot.version}</version>
+    </dependency> 
+	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-autoconfigure</artifactId>
+		<version>${boot.version}</version>
+    </dependency>            
+    
+    <dependency>
+	    <groupId>org.mybatis</groupId>
+		<artifactId>mybatis-spring</artifactId>
+		<version>${mybatis.spring.version}</version>
+	</dependency>  
+    <dependency>  
+        <groupId>mysql</groupId>  
+        <artifactId>mysql-connector-java</artifactId>  
+        <version>${mysql.connector.version}</version>
+    </dependency> 		
+	<dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>${mybatis.version}</version>
+    </dependency>
+    <dependency>  
+        <groupId>com.alibaba</groupId>  
+        <artifactId>druid</artifactId>  
+        <version>${druid.version}</version>  
+    </dependency> 
+    <dependency>
+	    <groupId>org.apache.tomcat</groupId>
+		<artifactId>tomcat-jdbc</artifactId>
+		<version>${tomcat.jdbc.version}</version> 
+	</dependency>
+	<dependency>
+	    <groupId>com.chuangke18.framework</groupId>
+	    <artifactId>api</artifactId>
+	    <version>${framework.api.version}</version> 
+	</dependency>	
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-lang3</artifactId>
+	    <version>${commons.lang.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>${log4j.api.version}</version>
+	</dependency>
+	<!-- 图片压缩 -->
+	<dependency>
+	   <groupId>net.coobird</groupId>
+	   <artifactId>thumbnailator</artifactId>
+	   <version>${thumbnail.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>com.alibaba</groupId>
+		<artifactId>fastjson</artifactId>
+		<version>${fastjson.version}</version>
+	</dependency>
+	
+	   
+
+  </dependencies>
+  <build>
+    <finalName>hos-simple-console</finalName>
+    
+	<resources>
+	   <resource>
+	      <directory>src/main/resources</directory>
+	      <includes>
+	         <!--include>**/*.xml</include>
+	         <include>**/*.properties</include>
+	         <include>**/*.css</include>
+	         <include>**/*.js</include>
+	         <include>**/*.png</include>
+	         <include>**/*.gif</include>
+	         <include>**/*.html</include>
+	         <include>init.sql</include-->
+	         <include>**/*.*</include>
+	      </includes>
+	   </resource>
+	</resources>    
+    
+    <plugins>  
+		<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-compiler-plugin</artifactId>
+		    <configuration>
+		        <source>1.7</source>
+		        <target>1.7</target>
+		    </configuration>
+		</plugin>
+		
+		<plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-shade-plugin</artifactId>
+		    <version>3.1.0</version>
+		    <executions>
+		        <execution>
+		            <phase>package</phase>
+		            <goals>
+		                <goal>shade</goal>
+		            </goals>
+		            <configuration>
+		                <transformers>
+		                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		                        <mainClass>io.eoshos.console.simple.Application</mainClass>
+		                    </transformer>
+		                    
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+	                            <resource>META-INF/spring.handlers</resource>
+	                        </transformer>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+	                            <resource>META-INF/spring.schemas</resource>
+	                        </transformer>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+	                            <resource>META-INF/spring.factories</resource>
+	                        </transformer>		                        		                    
+		                </transformers>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin> 
+    </plugins>      
+  </build>
+</project>  

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<#include "../common.html"/>
+		<title>充值</title>
+	</head>
+	<body>
+		<input hidden="hidden" type="text" id="userId" name="userId" value="${userId}">
+		
+		<div class="rmsTc">
+		<form id="addForm" class="rmsTcForm">
+			<div class="iframeForm">
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">充值金额</div>
+						<input class="w50" require="true" placeholder="请填写金额" type="text" name="coinNumber" id="coinNumber"/>
+						<span>HOS币</span>
+					</li>
+				</ul>	
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">备注</div>
+						<input require="false" placeholder="请填写备注" type="text" name="notes" id="notes"/>
+					</li>
+				</ul>				
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">上传凭证</div>
+						<div class="fileContent">
+							<div class="upLoadTop">
+								<div class="btnLoad">
+									<input id="upLoad" type="file" multiple="multiple" name="" id="" value="" />
+									<button type="button">上传</button>
+								</div>
+								<span>（一次充值最多上传3张凭证图片，每张不超过5M）</span>
+							</div>
+							<ul id="upLoadPic" class="upLoadPic">
+								<li class="noData">暂无凭证</li>
+							</ul>
+						</div>		
+					</li>
+				</ul>
+				<ul class="formOne">	
+					<li class="con">
+						<div class="title">充值记录</div>
+						<a onclick="toLook();" class="lookLick" href="javascript:;">查看充值记录</a>		
+					</li>
+				</ul>	
+			</div>
+		</form>
+		<div class="saveBtn">
+			<button type="button" class="save" onclick="submit()">提交</button>
+		</div>		
+		</div>
+		<script type="text/javascript">
+			$('#upLoad').change(function(e){
+				console.log(this.value)
+				var fileList=this.files;
+				var imgtest=/image\/(\w)*/;
+				var fileTypeArray = ['png','gif','jpg'];//文件类型集合
+				var fileSizeLimit = 5120;//文件大小限制
+				var html='';
+				var picJson=[];
+				for(var i=0;i<fileList.length;i++){
+		            var fileTypeStr =getSuffixNameByFileName(fileList[i].name);
+		            //文件大小显示判断
+		            if(fileSizeLimit!=-1&&fileList[i].size>(fileSizeLimit*1000)){
+		                alert("文件（"+fileList[i].name+"）超出了大小限制！请控制在"+fileSizeLimit+"KB内");
+		            }
+		            var fileTypeStr = getSuffixNameByFileName(fileList[i].name);
+		            //文件类型判断
+		            if(fileTypeArray=="*"||isInArray(fileTypeStr,fileTypeArray)){
+		                var fileTypeUpcaseStr = fileTypeStr.toUpperCase();
+		                if(imgtest.test(fileList[i].type)){
+		                    //var imgUrlStr = window.webkitURL.createObjectURL(fileList[i]);//获取文件路径
+		                    var imgUrlStr ="";//获取文件路径
+		                    if (window.createObjectURL != undefined) { // basic
+		                        imgUrlStr = window.createObjectURL(fileList[i]);
+		                    } else if (window.URL != undefined) { // mozilla(firefox)
+		                        imgUrlStr = window.URL.createObjectURL(fileList[i]);
+		                    } else if (window.webkitURL != undefined) { // webkit or chrome
+		                        imgUrlStr = window.webkitURL.createObjectURL(fileList[i]);
+		                    } 
+		                }
+		                html+='<li><span class="picClose">×</span><img class="bigPic" layer-src="'+imgUrlStr+'" src="'+imgUrlStr+'" alt="'+fileList[i].name+'"><p>'+fileList[i].name+'</p></li>';
+		            }else{
+		                alert("不支持该格式文件上传:"+fileList[i].name);
+		            }
+		        }
+				$('.upLoadPic').prepend(html);
+				layer.photos({
+				    photos:'#upLoadPic'
+				    ,anim: 5,
+				    shade:0.3
+				});
+			});
+			$(document).on('click','.picClose',function(){
+				$(this).parent('li').remove();
+			});
+			function getSuffixNameByFileName(fileName){
+		        var str = fileName;
+		        var pos = str.lastIndexOf(".")+1;
+		        var lastname = str.substring(pos,str.length);
+		        return lastname;
+		    }
+			function isInArray(strFound,arrays){
+		        var ishave = false;
+		        for(var i=0;i<arrays.length;i++){
+		            if(strFound==arrays[i]){
+		                ishave = true;
+		                break;
+		            }
+		        }
+		        return ishave;
+		    }
+		    function toLook(){
+		   		parent.openWindowIndex('充值记录','/deposit/depositlist?userId='+$("#userId").val(),'add')
+		    }
+		    
+		    COUNT_PIC = 0;//全局变量
+		    function submit(){
+		    	if (!$("#coinNumber").val()){
+		    		alert('充值金额不能为空!');
+		    		return;
+		    	}
+		    	if ($("#coinNumber").val()>1000){
+		    		alert('充值金额不能大于1000!');
+		    		return;
+		    	}		    	
+		    	var bUploadImg = true;
+		    	var len = $(".bigPic").length;
+		    	if (len > 3){
+		    		alert('一次充值最多上传3张凭证图片!');
+		    		return;
+		    	}
+
+		    	$('.bigPic').each(function (i) {
+			    	imgUrl =  $(".bigPic")[i].src;
+			    	imgName = $(".bigPic")[i].alt;
+		            loadImageToBlob(i,imgName, imgUrl, function(iOrder, fileName, blobFile) {//这里的img.src改地址  
+		                if(!blobFile) return false;
+		                var form = new FormData(); 
+		                form.append("userId", $("#userId").val());
+				        form.append("file", blobFile);
+				        form.append("fileName", fileName);
+				        form.append("notes", $("#notes").val());
+			    		$.ajax({  
+			    	         url: "/deposit/uploadimg",  
+			    	         type: 'POST',  
+			    	         data: form,  
+			    	         async: false,  
+			    	         cache: false,  
+			    	         contentType: false,  
+			    	         processData: false,  
+			    	         success: function (data) {  
+			    	        	 console.log(data);	
+			    	        	 COUNT_PIC++;
+			    	        	 deposit();
+			    	         },  
+			    	         error: function (data) {  
+			    	        	 console.log(data); 
+			    	         }  
+			    	    });
+		            }); 		    		
+		    	})
+		    	 		            
+		    }
+		    
+		    //img转化成BLOB
+	        function loadImageToBlob(i, name, url, callback) {  
+	            if(!url || !callback) return false;  
+	            var xhr = new XMLHttpRequest();  
+	            xhr.open('get', url, true);  
+	            xhr.responseType = 'blob';  
+	            xhr.onload = function() {  
+	                // 注意这里的this.response 是一个blob对象 就是文件对象  
+	                callback(i, name, this.status == 200 ? this.response : false);  
+	            }  
+	            xhr.send();  
+	            return true;  
+	        } 		
+	        
+		    //充值
+	        function deposit(){
+	        	if (COUNT_PIC < $(".bigPic").length){
+	        		return;
+	        	}
+	        	//alert("x"+COUNT_PIC);
+	        	COUNT_PIC = 0;
+	        	var url = "/deposit/deposit?userId=" + $("#userId").val() + "&coinNumber=" + $("#coinNumber").val() + "&notes=" + $("#notes").val();
+	    		$.ajax({  
+	    	         url: url,  
+	    	         type: 'POST',  
+	    	         //data: form,  
+	    	         async: false,  
+	    	         success: function (data) {  
+	    	        	 console.log(data);
+	    	        	 var o = eval(data);
+	    	        	 //alert(o.errorMsg);
+	    	         },  
+	    	         error: function (data) {  
+	    	        	 console.log(data); 
+	    	        	 var o = eval(data);
+	    	        	 //alert(o.errorMsg);
+	    	         }  
+	    	    });
+	    		//layer.close(layer.index);//关闭弹窗
+	    		layer.alert('上传成功');
+	        }
+		</script>
+	</body>
+</html>

@@ -1,0 +1,178 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>用户管理(充值)</title>
+    <#include "../common.html"/>
+</head>
+<body>
+    <div class="rmsMain">
+		<div class="rmsHeader">
+			<a onclick="clearClass()" class="rmsLogo" href="adminWelcome.html" target="rmsFrame"><img width="180" height="70" src="/images/logo.png"/></a>
+			<div class="rmsNav">
+				<a data-code='demo' href="javascript:;"><span class="icon1"></span>头部菜单</a>
+			</div>
+			<div class="userInfo">
+				<img class="userImg" src="/images/userImg.png"/>
+				<div class="userName">
+					欢迎您,李<span class="iconfont icon-down1"></span>
+				</div>
+				<ul class="userSet">
+					<li><a href="javascript:;" onclick="updatePwd();">修改密码</a></li>
+					<li><a href="javascript:;" onclick="logOut();">退出登录</a></li>
+				</ul>
+			</div>
+		</div>
+		<!--<div class="rmsLeft">
+			<ul class="rmsLnav">
+				<li><a href="" target="rmsFrame">充值管理</a></li>
+			</ul>
+		</div>-->
+		<div class="rmsRight">
+			<div class="bgWrite">
+				<div class="searchBox">
+					<div class="searchTop">
+						<!--h2 class="riskTitle">查询</h2-->
+						<div class="search-btn">
+							<button onclick="reload()" class="btn-search"><span class="iconfont icon-sousuo"></span>查询</button>
+							<button onclick="depositBatch()" class="btn-search"><span class="iconfont icon-sousuo"></span>批量充值</button>
+						</div>
+					</div>
+					<form name="searchForm" id="searchForm">	
+						<div class="iframeForm">
+							<ul class="formFour">
+								<li>注册日期<input id="beginDate" type="date" value=""/>至<input id="endDate" type="date" value=""/></li>
+								<li class="con">
+									<div class="title"><span>手机号</span></div>
+									<input require="false" type="text" name="phone" id="phone" maxlength=20/>
+								</li>
+								<li class="con">
+									<div class="title"><span>认证状态</span></div>
+									<select name="realStat" id="realStat" >
+									  <option value ="">全部</option>
+									  <option value ="0">未认证</option>
+									  <option value ="1">认证中</option>
+									  <option value="2">认证成功</option>
+									  <option value="3">认证失败</option>
+									</select>
+								</li>								
+							</ul>	
+						</div>	
+					</form>
+				</div>
+				<div class="tableBox">
+					<table id="table"
+			      		data-toggle="table"
+			      		data-url="/deposit/listusers"
+			      		data-height="452"
+			      		data-side-pagination="server"
+			      		data-pagination="true"
+			      		data-page-list="[10, 25, 50, 100, ALL]"
+			      		data-query-params="queryParams"
+			    		data-query-params-type="limit">
+			   		<thead>
+			   			<tr>
+					        <th data-field="state" data-checkbox="false"></th>
+					        <th data-width="5%" data-field="id">用户ID</th>
+					        <th data-width="10%" data-field="phone">手机号</th>
+					        <th data-width="15%" data-field="gmtCreatedStr">注册时间</th>
+					        <th data-width="15%" data-field="applyAuthTimeStr">申请实名时间</th>
+					        <th data-width="15%" data-field="authTimeStr">实名时间</th>
+					        <th data-width="10%" data-field="userName">用户名</th>
+					        <th data-width="10%" data-field="coinTotal">资产(HOS)</th>
+					        <!-- <th data-width="10%" data-field="inviteTotal">邀请人数</th> -->
+					        <th data-width="10%" data-field="realStat" data-formatter="convertRealStat" >认证状态</th>
+					        <th data-width="10%" data-field="id" data-formatter="deposit" >操作</th>
+			   			</tr>
+			   		</thead>
+					</table>
+				</div>
+			</div>
+		</div>	
+	</div>
+</body>
+
+	<script src="/js/boxImg.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var $table = $('#table');
+		
+		function reload() {
+			//alert($("[name='name']").val());
+			$table.bootstrapTable('refresh', {
+				url: '/deposit/listusers',
+				silent: true,
+				query: {
+					"phone": $("[name='phone']").val().trim(),
+					"realStat": $("[name='realStat']").val().trim(),
+					"beginDate": $("#beginDate").val().trim(),
+					"endDate": $("#endDate").val().trim(),
+				}
+			});
+		}
+		
+		function queryParams(params) {
+		    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+		        limit: params.limit,   //页面大小
+		        offset: params.offset,  //页码
+		        phone: $("[name='phone']").val().trim(),
+		        realStat: $("[name='realStat']").val().trim(),
+		        beginDate: $("#beginDate").val().trim(),
+		        endDate: $("#endDate").val().trim(),
+		        sort: params.sort,  //排序列名
+		        sortOrder: params.order//排位命令（desc，asc）
+		    };
+		    return temp;
+		}
+		
+		function deposit(value,row){
+			if (row.id == '1'){
+				return;
+			}
+			return "<a onclick=openButtonWindow('充值','/deposit/deposit?userId="+row.id+"','add',['640px','540px']) href='javascript:;'>充值</a>"
+		}
+		
+		function depositBatch(){
+			openButtonWindow('批量充值','/deposit/deposits','add',['640px','540px']);
+		}
+		
+		function convertRealStat(value,row){
+			if (value == '0'){
+				value = '未认证';
+			}
+			if (value == '1'){
+				var gmtModified = new Date(row.gmtModifiedStr.replace(new RegExp("-","gm"),"/")).getTime() /1000;
+				return "<a onclick=openButtonWindow('待认证','/deposit/authing?userId="+row.id+"&cardId="+ row.cardId + "&realName="+ row.realName + "&gmtModified=" + gmtModified + "','add',['640px','580px']) href='javascript:;'>待认证</a>"
+			}
+			if (value == '2'){
+				//return '认证成功';
+				return "<a onclick=openButtonWindow('认证成功','/deposit/authed?userId="+row.id+"&cardId="+ row.cardId + "&realName="+ row.realName + "','add',['640px','580px']) href='javascript:;'>认证成功</a>"
+			}
+			if (value == '3'){
+				//return '认证失败';
+				return "<a onclick=openButtonWindow('认证失败','/deposit/authfail?userId="+row.id+"&cardId="+ row.cardId + "&realName="+ row.realName + "&notes=" + row.notes + "','add',['640px','580px']) href='javascript:;'>认证失败</a>"
+			}			
+		}		
+		
+		function openWindowIndex(title, url, icon, args){
+			layer.closeAll();
+		    if (icon != 'add') {
+		    	if(!checkOneIdUpdate(icon)){
+					return;
+				}
+		    	if(icon.indexOf("href") != -1){
+					if(!checkOneIdUpdate(icon)){
+						return;
+					}
+					hrefFunction(url,icon);
+					return;
+				}
+		        if (url.indexOf('?') != -1) {
+		            url = url + '&id=' + getSelectId()
+		        } else {
+		            url = url + '?id=' + getSelectId();
+		        }
+		    }
+		    openWindow(title, url,args);
+		}
+	</script>
+</html>
+

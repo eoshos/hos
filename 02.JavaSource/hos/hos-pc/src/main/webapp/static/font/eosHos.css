@@ -1,0 +1,12 @@
+@font-face {
+    font-family: "DIN Neuzeit Grotesk Std Light";
+    src: url("eosHos.eot"); /* IE9 */
+    src: url("eosHos.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("eosHos.woff") format("woff"), /* chrome, firefox */
+    url("eosHos.ttf") format("truetype"), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+    url("eosHos.svg#DIN Neuzeit Grotesk Std Light") format("svg"); /* iOS 4.1- */
+    font-style: normal;
+    font-weight: normal;
+}
+
+

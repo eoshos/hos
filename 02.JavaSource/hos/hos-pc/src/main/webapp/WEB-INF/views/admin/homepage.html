@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>EOSHOS</title>		
+		<#include "/admin/common/top.html">
+	</head>
+	<body style="background: #f5f6fa;" onload="init()">
+		<div style="display: none;">
+			<canvas></canvas>
+		</div>
+			<div class="landedHeader">
+				<div class="wrap">
+					<img src="/static/images/logo.png" alt="" />
+					<ul>
+						<li>${homepage_1_1}</li>
+						<li onclick="downloadWhitePaper()">${common4}</li>				
+						<li class="zh">
+							${userName} <span></span>
+							<div>
+								<a href="javascript:;">${homepage_1_2}</a>
+								<a href="javascript:;" onclick="jumpLogout()">${homepage_1_3}</a>
+							</div>
+						</li>
+						<li class="lang">
+							<#if localLang??&&localLang=='en'>English<#else>繁體中文</#if> <span></span>
+							<div>
+								<a href="javascript:;" onclick="switchLanguage('en')">English</a>
+								<a href="javascript:;" onclick="switchLanguage('zh')">繁體中文</a>
+							</div>
+						</li>
+					</ul>					
+				</div>
+			</div>	
+			<div class="wrap">
+				<div class="con con1">
+					<h3>${homepage_1}${userName}</h3>
+					<p><a href="javascript:;" id="realStat"></a></p>
+					<p>${homepage_3}</p>
+					<input id="yqm" readonly="readonly">
+					<p><a href="javascript:;" class="copy" onclick="copy()">${homepage_4}</a><a href="javascript:;" class="jl" onclick="listInvite()">${homepage_5}></a></p>
+					<p><a href="javascript:;" class="yq">${homepage_6}</a><a href="javascript:;" class="hb">${homepage_7}</a></p>
+					<div class="yqhy">
+						<p class="bu"></p>
+						<ul>
+							<li id="listPic1">
+								<p><img src="/static/images/wx1.png" alt="" />${homepage_8}</p>
+								<!-- <img class="ma" src="/static/images/ewmWx.png" alt="" /> -->
+							</li>
+							<!-- <li id="listPic2">
+								<p><img src="/static/images/wx2.png" alt="" />${homepage_9}</p>
+							</li> -->
+							<li>
+								<ul>
+									<li class="qqhy"><img src="/static/images/qq.png" alt="" />${homepage_9_1}</li>
+									<li onclick="shareToQq('HOS','https://eoshos.io/enroll/index.html?lang=' + storage.getItem('localLang') + '&inviteCode=${inviteCode}')"><img src="/static/images/kj.png" alt="" />${homepage_9_2}</li>
+									<li class="tuit"><img src="/static/images/tt.png" alt="" />Twitter</li>
+									<li class="fb"><img src="/static/images/fb.png" alt="" />Facebook</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="con con2">
+					<h3>${homepage_10}<a href="javascript:;" class="asset">${homepage_23}</a></h3>
+					<p class="num1">
+						${coinTotal}
+					</p>
+					<p>
+						<i>${homepage_24} <small class="num2">${coinAvailable}</small></i><i>${homepage_25} <small class="num3">${coinFreeze}</small><span class="poi">i</span></i>
+					</p>
+					<p class="point">${homepage_26}</p>
+					<p><a href="javascript:">提币</a></p>
+				</div>
+				<div class="con con3">
+					<h3>${homepage_12}<a href="javascript:;" class="xq">${homepage_12_1}</a></h3>
+					<ul>
+						<li>${homepage_13}</li>
+						<li>${homepage_14}</li>
+						<li>${homepage_15}</li>
+						<li>${homepage_16}</li>
+					</ul>
+				</div>
+				<p style="clear:both"></p>
+			</div>
+			<div class="wrap">
+				<div class="con4" id="transTable">
+					<h3>${homepage_17_1}</h3>
+					<table id="accountTrans">
+						<tr>
+							<th>TxHash</th>
+							<th>${homepage_18_1}</th>
+							<th>${homepage_18_2}</th>
+							<th>${homepage_18_3}</th>
+							<th>${homepage_18_4}</th>
+							<th>${homepage_18_5}</th>
+							<th>${homepage_18_6}</th>
+						</tr>						
+					</table>
+					<p>${homepage_18_7}</p>
+				</div>
+			</div>
+				
+
+			<div class="tip">
+				<img src="/static/images/gou.png" alt="" />${common40}
+			</div>
+			
+			<div class="blk"> 
+				<div class="record">
+					<span class="shut"><img src="/static/images/shut.png" alt="" /></span>
+					<div class="yqjl">
+						<h3>${invitationpage_1}<span>${invitationpage_2_1} ${numberInvite} ${invitationpage_2_2} ${numberReward} ${invitationpage_2_3}</span></h3>
+						<p class="tit"><span>${invitationpage_3_1}</span><span>${invitationpage_3_2}</span><span>${invitationpage_3_3}</span><span>${invitationpage_3_4}</span></p>				
+						<div class="inn">
+						<table id = "listInvite">	
+						</table>
+					</div>
+					</div>
+					
+					<div class="zshb">
+						<div>						
+							<canvas id="hb" width="300" height="436"></canvas>
+						</div>						
+					</div>
+					<div class="ckxq">
+						<h3>${taskpage_0}</h3>
+						<span>${taskpage_1_1}</span><p>${taskpage_1_2}</p>
+						<span>${taskpage_2_1}</span><p>${taskpage_2_2_1}<br>${taskpage_2_2_2}<br>${taskpage_2_2_3}</p>
+						<span>${taskpage_3_1}</span><p>${taskpage_3_2}</p>
+						<span>${taskpage_4_1}</span><p>${taskpage_4_2}</p>
+						<div>
+							<p>
+								<img src="/static/images/ewmWx.png" alt="" /><br>
+								<span>${taskpage_5_1}</span>
+							</p>
+							<p>
+								<img src="/static/images/kf.png" alt="" />
+								<span>${taskpage_5_2}</span>
+							</p>
+						</div>
+					</div>
+					<div class="myiframe">
+						<iframe name="myiframe" id="myrame" src="asset.html" frameborder="0" align="left" width="100%" height="100%" scrolling="no"></iframe>
+					</div>					
+                </div>
+			</div>
+			<div class="blk2">
+				<div class="record2">
+					<div class="tips1">
+						<h3>温馨提示</h3>
+						<p>实名认证完成后，才能进行提币操作。</p>
+						<a href="javascript:" class="clos">确定</a>
+					</div>
+				</div>
+			</div>
+		
+		<script>
+			$(".poi").hover(function(){
+				$(".point").show()
+			},function(){
+				$(".point").hide()
+			})
+			var hb = document.getElementById("hb");
+	        var imgObj = new Image();
+	        //待图片加载完后，将其显示在canvas上
+	        imgObj.onload = function(){
+	                var ctx = hb.getContext('2d');
+	                ctx.drawImage(this, 0, 0,300,436);//this即是imgObj,保持图片的原始大小：470*480
+	            }
+	        imgObj.src = "/static/images/hb.jpg";
+	           var imgewm = new Image();
+		        //待图片加载完后，将其显示在canvas上
+		        imgewm.onload = function(){
+		                var ctx = hb.getContext('2d');
+		                ctx.drawImage(this, 110, 245,80,80);//this即是imgObj,保持图片的原始大小：470*480
+		            }
+		        imgewm.src = "/homepage/getimage?phone=" + ${userName} + "_wap";
+		        
+		    function num(obj){
+		    	var n=parseFloat(obj.html());
+		    	var n1=numFormat(n);
+		    	obj.html(n1)
+		    }
+		    num($(".num1"))
+		    num($(".num2"))
+		    num($(".num3"))
+			//localLang = "${localLang}";
+			var storage = window.localStorage;
+			if(storage.getItem("localLang")=="zh"){				
+				$(".hb").attr("src","/static/images/hb.jpg");
+				$(".yqhy").css("width","340px")
+				$(".landedHeader li:last-child div").css("width","126px")
+			}else{
+				$(".hb").attr("src","/static/images/eng_hb.png")
+				$(".ckxq p").css({"font-size":"12px","margin-bottom":"5px"})
+				$(".tit span").css("vertical-align","middle")
+				$(".tit span:nth-child(3)").css("line-height","14px")
+				$(".con2 p:last-child").css("font-size","14px")
+			}
+			
+			function copy(){
+				var m=document.getElementById("yqm");
+			    m.select(); // 选择对象
+			    document.execCommand("Copy"); // 执行浏览器复制命令
+			    $(".tip").show();
+			    setTimeout(function(){
+			    	 $(".tip").hide();
+			    },2000)
+		   }
+		//分享qq好友,推特,facebook
+			var p = {
+				    url:'https://eoshos.io/enroll/index.html?lang=' + storage.getItem('localLang') + '&inviteCode=' + '${inviteCode}', /*获取URL，可加上来自分享到QQ标识，方便统计*/
+				    desc:'发送信息给好友', 
+				    title:'发送信息给好友', /*分享标题(可选)*/
+				    summary:'', /*分享摘要(可选)*/
+				    pics:'', /*分享图片(可选)*/
+				    flash: '', /*视频地址(可选)*/
+				    site:'http://wwww.baidu.com', /*分享来源(可选) 如：QQ分享*/
+				    style:'203',
+				    width:16,
+				    height:16
+				};
+			var s = [];
+				for(var i in p){
+				s.push(i + '=' + encodeURIComponent(p[i]||''));
+				}
+				$(".qqhy").click(function(){
+					window.open("http://connect.qq.com/widget/shareqq/index.html?"+s.join('&'))
+				})	
+				$(".tuit").click(function(){
+					window.open("http://twitter.com/home/?status=網址標題 分享網址")
+				})
+				$(".fb").click(function(){
+					window.open("http://www.facebook.com/share.php?u=分享網址")
+				})
+		//分享qq空间
+		function shareToQq(title,url,picurl){
+			var shareqqzonestring='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?summary='+title+'&url='+encodeURIComponent(url)+'&pics='+picurl;
+			window.open(shareqqzonestring);
+			}
+		$(".zh,.zh div").hover(function(){
+			$(".zh div").show()
+		},function(){
+			$(".zh div").hide()
+		})
+		$(".lang").hover(function(){
+			$(".lang div").show()
+		},function(){
+			$(".lang div").hide()
+		})
+		$(".yq,.yqhy").hover(function(){
+			$(".yqhy").show();
+		},function(){
+			$(".yqhy").hide();
+		})
+	    $(".jl").click(function(){
+	    	$(".blk").css("display","table");
+	    	$(".record>div").hide();
+ 	    	$(".yqjl").css("display","inline-block");
+	    })
+	  $(".hb").click(function(){
+	    	$(".blk").css("display","table");
+	    	$(".record>div").hide();
+	    	$(".zshb").show()
+	    })
+	  $(".xq").click(function(){
+	    	$(".blk").css("display","table");
+	    	$(".record>div").hide();
+	    	$(".ckxq").show()
+	    })
+	   $(".asset").click(function(){
+	    	$(".blk").css("display","table");
+	    	$(".record>div").hide();
+	    	$(".myiframe").show()
+	    })
+	   $(".shut").click(function(){
+		   $(".blk").css("display","none");
+	   })
+	   $(".clos").click(function(){
+		   $(".blk2").css("display","none");
+	   })
+	    function listInvite(){
+			$.ajax({
+				url : "/invite/listinvite",
+				type : "post",
+				processData : false,
+				contentType : false,
+				success : function(data) {
+					console.log(data);
+   	        	 	data=JSON.parse(data);
+					if(data.errorCode = '0000'){
+						var rows = data.rows;
+						var i = 0;
+						$('#listInvite').empty();
+						for(;i<rows.length;i++){
+							$('<tr><td>'+(i+1)+'</td><td>'+rows[i].invitePhone+'</td><td>'+rows[i].coinReward+'</td><td>'+rows[i].gmtCreatedStr+'</td></tr>').appendTo($('#listInvite'));
+						}
+					}
+				}
+			});
+		}
+		
+		function init(){
+			$('#listPic1').append("<img class='ma' src='/homepage/getimage?phone=" + ${userName} + "_wap' alt=''/>");
+			$('#listPic2').append("<img class='ma' src='/homepage/getimage?phone=" + ${userName} + "_wap' alt=''/>");
+			$('#listPic3').append("<img class='ma' src='/homepage/getimage?phone=" + ${userName} + "_wap' alt=''/>");
+			$('#listPic4').append("<img class='ma' src='/homepage/getimage?phone=" + ${userName} + "_wap' alt=''/>");
+			$('#listPic5').append("<img class='ma' src='/homepage/getimage?phone=" + ${userName} + "_wap' alt=''/>");
+			$('#yqm').val('${inviteCode}');
+			loadImage();
+			loadStat();
+			//accountTrans();
+		}
+		
+		function accountTrans(){
+			$.ajax({
+				url : "/login/accountTrans?offset=0&limit=10",
+				type : "post",
+				processData : false,
+				contentType : false,
+				success : function(data) {
+					console.log(data);
+   	        	 	data=JSON.parse(data);
+					if(data.errorCode = '0000'){
+						var rows = data.rows;
+						var totalCoinReward = 0;
+						var i = 0;
+						$("#accountTrans").empty();
+						for(;i<rows.length;i++){
+							$('<tr><td>'+(i+1)+'</td><td>'+
+									rows[i].invitePhone
+									+'</td><td>'+
+									rows[i].gmtCreatedStr
+									+'</td><td>'+
+									rows[i].otherUserId
+									+'</td><td>'+
+									rows[i].userId
+									+'</td><td>'+
+									rows[i].coinNumber
+									+'</td><td>'+
+									rows[i].gmtCreated
+									+'</td></tr>').appendTo($('#accountTrans'));
+							totalCoinReward += rows[i].coinReward;
+						}
+						if(i == 0){
+							$('<p>${homepage_18_7}</p>').appendTo($('#transTable'));
+						}
+					}
+				}
+			});
+		}
+		
+		function jumpLogout(){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+			window.location.href="/login/logOut.html?lang="+lang;
+		}			
+		function switchLanguage(language){
+			var storage = window.localStorage;
+			storage.setItem("localLang", language);					
+			window.location.href="/homepage/index.html?lang=" + language ;
+		}		
+		
+		function downloadWhitePaper(){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+	    	location.href="/login/downloadwhitepaper?language="+lang;
+	    }
+		
+		function auth(url){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+	    	location.href="/homepage/"+url+"?lang="+lang;
+	    }
+		
+		function asset(){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+	    	location.href="/homepage/asset?language="+lang;
+	    }		
+		
+		
+		function loadImage(){
+			var hb = document.getElementById("hb");
+	        var imgObj = new Image();
+	        //待图片加载完后，将其显示在canvas上
+	        imgObj.onload = function(){
+	                var ctx = hb.getContext('2d');
+	                ctx.drawImage(this, 0, 0,300,436);//this即是imgObj,保持图片的原始大小：470*480
+	            }
+	        imgObj.src = "/static/images/hb.jpg";
+	           var imgewm = new Image();
+		        //待图片加载完后，将其显示在canvas上
+		        imgewm.onload = function(){
+		                var ctx = hb.getContext('2d');
+		                ctx.drawImage(this, 110, 245,80,80);//this即是imgObj,保持图片的原始大小：470*480
+		            }
+		        imgewm.src = "/homepage/getimage?phone=" + ${userName} + "_wap";
+		}
+		
+		function loadStat(){
+			var realStat = ${realStat};
+			if(realStat == '1'){
+				$("#realStat").text("${homepage_2_1}");
+				$("#realStat").attr("onclick","auth('authing');");
+			}else if(realStat == '2'){
+				$("#realStat").text("${homepage_2_2}");
+				$("#realStat").attr("onclick","auth('authed');");
+			}else if(realStat == '3'){
+				$("#realStat").text("${homepage_2_3}");
+				$("#realStat").attr("onclick","auth('authfail');");
+			}else{
+				$("#realStat").text("${homepage_2}");
+				$("#realStat").attr("onclick","auth('auth');");
+			}
+		}
+		
+		var childFrameObj = document.getElementById('myrame');
+		childFrameObj.contentWindow.userId = '${userId}';
+		childFrameObj.contentWindow.homepage_27 = '${homepage_27}';
+		childFrameObj.contentWindow.homepage_28 = '${homepage_28}';
+	    childFrameObj.contentWindow.homepage_29 = '${homepage_29}';
+	    childFrameObj.contentWindow.homepage_30 = '${homepage_30}';
+	    childFrameObj.contentWindow.homepage_31 = '${homepage_31}';
+	    childFrameObj.contentWindow.homepage_32 = '${homepage_32}';
+		
+		</script>
+	</body>
+</html>

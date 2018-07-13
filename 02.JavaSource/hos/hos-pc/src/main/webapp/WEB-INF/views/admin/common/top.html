@@ -1,0 +1,177 @@
+
+	<link rel="stylesheet" type="text/css" href="/static/css/base.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/font/eosHos.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+	<link rel="shortcut" href="/favicon.ico" />
+	<script src="/static/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/indexCanvas.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/jquery.validate.js"></script>
+	<script>
+		function getpass(){
+			$("#loginForm").validate().element($("#phone"));
+			$("#loginForm").validate().element($("#valicode"));
+			var countDown = 60;		
+			$.ajax({  
+		         url: "/enroll/validationcode?phone=" + $('#phone').val() + "&valicode=" + $('#valicode').val(),
+		         type: 'POST',  
+		         //data: form,  
+		         async: true,  
+		         cache: false,  
+		         contentType: false,  
+		         processData: false,  
+		         success: function (data) {  
+		        	 console.log(data);
+		        	 data=JSON.parse(data);
+		        	 if(data.errorCode == '0000'){
+		        		 console.log(data.errorMsg);
+		        		$('.checktime').html(countDown + '${common17}').css({"background":"#0e1049","color":"#666","pointer-events":"none"});
+						var timer = setInterval(function() {
+							countDown--;
+							if (countDown) {
+								$('.checktime').html(countDown + '${common17}');
+							} else {
+								clearInterval(timer);
+								$('.checktime').css({"background":"transparent","color":"#fff","pointer-events":"auto"}).html('${common8}').bind("click",getpass);
+							}
+						}, 1000);
+		        	 }else{
+		        	 	$('#codeImg').trigger('click');
+		        	 	console.log(data.errorCode);
+		        	 	if(data.errorCode == '9998'){
+		        	 		$(".tips").html('${common30}');
+		        	 	}else if(data.errorCode == '9997'){
+		        	 		$(".tips").html('${common31}');
+		        	 	}else if(data.errorCode == '9996'){
+		        	 		$(".tips").html('${common32}');
+		        	 	}else if(data.errorCode == '9995'){
+		        	 		$(".tips").html('${common33}');
+		        	 	}else if(data.errorCode == '9994'){
+		        	 		$(".tips").html('${common34}');
+		        	 	}else if(data.errorCode == '9993'){
+		        	 		$(".tips").html('${common35}');
+		        	 	}else if(data.errorCode == '9992'){
+		        	 		$(".tips").html('${common36}');
+		        	 	}else if(data.errorCode == '9991'){
+		        	 		$(".tips").html('${common37}');
+		        	 	}else if(data.errorCode == '9990'){
+		        	 		$(".tips").html('${common38}');
+		        	 	}else if(data.errorCode == '9989'){
+		        	 		$(".tips").html('${common39}');
+		        	 	}else if(data.errorCode == '9988'){
+		        	 		$(".tips").html('${common18_1}');
+		        	 	}else if(data.errorCode == '9987'){
+		        	 		$(".tips").html('${common14}');
+		        	 	}else{
+		        	 		$(".tips").html("Exception of Request");
+		        	 	}
+		        	 }
+		         },  
+		         error: function (data) {  
+		        	  
+		         }  
+		   });			
+		}	
+		function GetRequest() {   
+			   var url = location.search; //获取url中"?"符后的字串   
+			   var theRequest = new Object();   
+			   if (url.indexOf("?") != -1) {   
+			      var str = url.substr(1);   
+			      strs = str.split("&");   
+			      for(var i = 0; i < strs.length; i ++) {   
+			         theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);   
+			      }   
+			   }   
+			   return theRequest;   
+		} 	
+		
+		var storage = window.localStorage;
+		var lang = storage.getItem("localLang");
+		if (!storage.getItem("localLang")){
+			storage.setItem("localLang", 'zh');
+		}
+		function language(obj){
+			var newhref=String(obj.attr("href"))+lang;
+			obj.attr("href",newhref)
+		}
+		function photoCompress(file,w,obj){
+            var ready=new FileReader();
+            ready.readAsDataURL(file);
+            ready.onload=function(){
+                var re=this.result;
+                if(w.quality<1){
+                	canvasDataURL(re,w,obj);
+                }else{
+                	$(obj).nextAll('.upFileVal').val(re);
+                	$(obj).nextAll('.upFileImg').attr('src',re);
+                }
+            }
+        }
+		function canvasDataURL(path,obj,setObj){
+            var img = new Image();
+            img.src = path;
+            img.onload = function(){
+                var that = this;
+                // 默认按比例压缩
+                var w = that.width,
+                    h = that.height,
+                    scale = w / h;
+                w = obj.width || w;
+                h = obj.height || (w / scale);
+                var quality = 0.7;  // 默认图片质量为0.7
+                //生成canvas
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                // 创建属性节点
+                var anw = document.createAttribute("width");
+                anw.nodeValue = w;
+                var anh = document.createAttribute("height");
+                anh.nodeValue = h;
+                canvas.setAttributeNode(anw);
+                canvas.setAttributeNode(anh);
+                ctx.drawImage(that, 0, 0, w, h);
+                // 图像质量
+                if(obj.quality && obj.quality <= 1 && obj.quality > 0){
+                    quality = obj.quality;
+                }
+                // quality值越小，所绘制出的图像越模糊
+                var base64 = canvas.toDataURL('image/jpeg', quality);
+                // 回调函数返回base64的值
+                $(setObj).nextAll('.upFileVal').val(base64);
+               	$(setObj).nextAll('.upFileImg').attr('src',base64);
+            }
+        }
+		
+		function jumpLogout(){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+			window.location.href="/login/logOut.html?lang="+lang;
+		}			
+		
+		function downloadWhitePaper(){
+			var storage = window.localStorage;
+			var lang = storage.getItem("localLang");
+	    	location.href="/login/downloadwhitepaper?language="+lang;
+	    }
+		
+		//隐藏字符串指定前后长度信息
+		function hideMessage(str,frontLen,endLen){
+			var len = str.length-frontLen-endLen;
+			var tmp = '';
+			for (var i=0;i<len;i++) {
+				tmp+='*';
+			}
+			return str.substring(0,frontLen)+tmp+str.substring(str.length-endLen);
+		}
+		
+		function numFormat(num){
+			var group = parseFloat(num).toString().split(".");
+			if(group.length == 2){
+				var num2 = group[1];
+				if(num2.length >= 2){
+					return parseFloat(num);
+				}
+			}
+			return num.toFixed(2);
+		}
+	</script>
+	

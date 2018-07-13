@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="aggressiveLazyLoading" value="false" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="autoMappingBehavior" value="PARTIAL" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25000" />
+		<setting name="safeRowBoundsEnabled" value="false" />
+		<setting name="localCacheScope" value="SESSION" />
+		<setting name="jdbcTypeForNull" value="OTHER" />
+		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
+		<setting name="logImpl" value="LOG4J2" />
+		<!--使用jdbc的getGeneratesKeys 获取数据库的自增主键值 -->
+		<setting name="useGeneratedKeys" value="true" />
+		<!--使用列别名替换列名 默认true -->
+		<setting name="useColumnLabel" value="true" />
+		<!--开启驼峰命名转换 -->
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="logImpl" value="LOG4J2" />
+	</settings>
+	<!-- <plugins>
+		<plugin
+			interceptor="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+			<property name="dialectClass"
+				value="com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect" />
+		</plugin> 
+	</plugins> -->
+	<!-- <plugins>
+		<plugin interceptor="com.chuangke18.cfs.admin.interceptor.PageInterceptor">
+			<property name="databaseType" value="mysql" />
+		</plugin>
+	</plugins> -->
+	<!-- <plugins>
+        <plugin interceptor="com.chuangke18.cfs.mybatis.utils.PagePlugin">
+            <property name="dialect" value="mysql" />
+            <property name="pageSqlId" value=".*ByPageCondition.*" />
+        </plugin>
+    </plugins> -->
+</configuration>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<#include "/wap/common/top.html">
+		<title>EOSHOS</title>
+	</head>
+	<body style="background:none;">
+		<div class="realTop">
+			<a href="javascript:history.back(-1)" class="return"><img src="/static-wap/images/hsBtn.jpg"/></a>
+			${homepage_27}
+		</div>
+		<!-- <div class="assettip">
+			<p>只显示最近三个月明细 <img src="/static-wap/images/shut.png" alt="" /></p>
+		</div> -->
+		<ul class="assetbox" id="assetDetails">
+		</ul>
+		<div class="assetbtn">
+			<a onclick="loadMore()">${homepage_34}</a>
+		</div>
+		<div class="loading">
+			<div class="in">
+				<img src="/static-wap/images/loading.png"/>
+				<p>loading···</p>
+			</div>
+		</div>
+		<script>
+			var num = 1;
+			var size = 6;
+			var len=0;
+			loadData(num,size);
+			function loadMore(){
+				num++;
+				loadData(num,size);
+			}
+			function loadData(num,size){
+				$('.loading').show();
+				$.ajax({
+					url : "/asset/details?offset="+(num-1)*size+"&limit="+size+"&userId="+${userId},
+					type : "post",
+					processData : false,
+					contentType : false,
+					success : function(data) {
+						data = JSON.parse(data);
+						len=Math.ceil(data.total/size);
+						if(len<1 || num>=len){
+							$('.assetbtn').html('<p align="center" style="color:#bbbdc2;background:#f5f6fa;font-size:14px">已经到底了</p>');
+						}
+						if (data.errorCode = '0000') {
+							var rows = data.rows;
+							for (i = 0; i < rows.length; i++) {
+								var coinNumber = numFormat(rows[i].coinNumber);
+								if(rows[i].dcFlag == "D"){
+									rows[i].dcFlag = '${homepage_32}';
+									rows[i].coinNumber = "-" + coinNumber;
+								}else if(rows[i].dcFlag == "C"){
+									rows[i].dcFlag = '${homepage_29}';
+									rows[i].coinNumber = "+" + coinNumber;
+								}else if(rows[i].dcFlag == "N"){
+									rows[i].coinNumber = coinNumber;
+									if(rows[i].transType == "8"){
+										rows[i].dcFlag = '${homepage_30}';
+									}else if(rows[i].transType == "9"){
+										rows[i].dcFlag = '${homepage_31}';
+									}
+								}
+								$(
+									'<li>'+ 
+									rows[i].dcFlag + '<br>' + 
+									'<i>' + rows[i].gmtCreatedStr + '</i>' + 
+									'<span>' + rows[i].coinNumber + '</span>' +
+									'</li>'		
+								).appendTo($('#assetDetails'));
+							}
+						}
+						$('.loading').hide()
+					}
+				});
+			}
+			
+		</script>
+	</body>
+</html>

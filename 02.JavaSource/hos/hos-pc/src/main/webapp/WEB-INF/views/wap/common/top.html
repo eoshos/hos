@@ -1,0 +1,441 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="/static-wap/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="/static-wap/font/eosHos.css"/>
+<link rel="stylesheet" type="text/css" href="/static-wap/css/hos.css?v=20180621"/>
+<script src="/static-wap/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static-wap/js/ck.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	window.addEventListener(('orientationchange' in window ? 'orientationchange' : 'resize'), 
+	(function () { function c() { var d = document.documentElement; var cw = d.clientWidth || 1200; 
+	d.style.fontSize = (20 * (cw / 600)) > 40 ? 40 + 'px' : (20 * (cw / 600)) + 'px'; } c(); 
+	return c; })(), false);
+	function checkValue(name,getAjax){
+		var msg='';
+		var _this=$('[name = '+name+']');
+		var val=_this.val();
+		var mobile = /^((1[1-9]{1}[0-9]))\d{8}$/;
+		var pwd = /^(?![0-9]+$)(?![a-zA-Z]+$)(?![~!@#$%^&*()_]+$)[0-9A-Za-z~!@#$%^&*()_]{6,18}$/;
+		var result=false;
+		if(val==''){
+			switch(name)
+			{
+			    case 'phone':
+			        msg='${common30}';	
+			        break;
+			    case 'randomcode':
+			        msg='${common31}';	
+			        break;
+			    case 'phonecode':
+			        msg='${common32}';	
+			        break;
+			    case 'password':
+			        msg='${common33}';	
+			        break;
+			    case 'invitecode':
+			        result=true;
+			        break;    
+			}
+			if(!result){
+				_this.addClass('errorInput');
+				console.log('${common30}')
+				_this.nextAll('.errorMsg').html(msg);
+			}
+		}else{
+			switch(name)
+			{
+			    case 'phone':
+			    	if(mobile.test(val)){
+			    		if(getAjax){
+			    			if(val=='18268048237'){
+					    		msg='${common34}';	
+					    		_this.addClass('errorInput');
+								_this.nextAll('.errorMsg').html(msg);
+					    	}else{
+					    		result=true;
+					    	}
+			    		}else{
+			    			result=true;
+			    		}
+			    	}else{
+			    		msg='${common35}';	
+			    		_this.addClass('errorInput');
+						_this.nextAll('.errorMsg').html(msg);
+			    	}
+			        break;
+			    case 'randomcode':
+			        if(getAjax){
+		    			if(!getImgcode(val)){
+				    		msg='${common36}';	
+				    		_this.addClass('errorInput');
+							_this.nextAll('.errorMsg').html(msg);
+				    	}else{
+				    		result=true;
+				    	}
+		    		}else{
+		    			result=true;
+		    		}
+			        break;
+			    case 'phonecode':
+			        if(getAjax){
+		    			if(val!='8888'){
+				    		msg='${common37}';	
+				    		_this.addClass('errorInput');
+							_this.nextAll('.errorMsg').html(msg);
+				    	}else{
+				    		result=true;
+				    	}
+		    		}else{
+		    			result=true;
+		    		}
+			        break;    
+			    case 'password':
+			    	if(pwd.test(val)){
+			    		result=true;
+			    	}else{
+			    		msg='${common38}';	
+			    		_this.addClass('errorInput');
+						_this.nextAll('.errorMsg').html(msg);
+			    	}	
+			        break;
+			    case 'invitecode':
+			    	if(getAjax){
+		    			if(val!=$('#invitecode').val()){
+				    		msg='${common39}';	
+				    		_this.addClass('errorInput');
+							_this.nextAll('.errorMsg').html(msg);
+				    	}else{
+				    		result=true;
+				    	}
+		    	}
+			   break;    
+			}
+		}
+		
+		return result
+	}
+	
+	function checkForm(name){
+		var msg='';
+		var _this=$('[name = '+name+']');
+		var val=_this.val().replace(/\s+/g,"");
+		var card = /^(^\d{18}$|^\d{17}(\d|X|x|y|Y))$/;
+		var user=/^([1-5a-z]{12})+$/;
+	    var tag=/^(\w)+$/;
+		var result=false;
+		if(val==''){
+			switch(name)
+			{
+			    case 'realName':
+			        msg='真实姓名不能为空！';	
+			        break;
+			    case 'cardId':
+			        msg='身份证号码不能为空！';	
+			        break;
+			    case 'faceupFileVal':
+			        msg='身份证正面不能为空！';	
+			        break; 
+			    case 'identityupFileVal':
+			        msg='身份证反面不能为空！';	
+			        break; 
+			    case 'userName':
+			        msg='请输入EOS账户！';	
+			        break; 
+			    case 'tagName':
+			        msg='请输入标签！';	
+			        break; 
+			    case 'amount':
+			        msg='请输入提币数量！';	
+			        break;
+			}
+			if(!result){
+				console.log(name+'----'+msg);
+				ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+			}
+		}else{
+			switch(name)
+			{
+			    case 'cardId':
+			        if(card.test(val)){
+			    		result=true;
+			    	}else{
+			    		msg='身份证号码不合法！';	
+			    	}
+			        break;
+			    case 'userName':
+			        if(user.test(val)){
+			    		result=true;
+			    	}else{
+			    		msg='EOS账户不合法！';	
+			    	}
+			        break;
+			    case 'tagName':
+			        if(tag.test(val)){
+			    		result=true;
+			    	}else{
+			    		msg='标签不合法！';	
+			    	}
+			        break;
+			    case 'amount':
+			        var mon=parseInt($(".getall span").html());
+			        if(val<=mon){
+			    		result=true;
+			    	}else{
+			    		msg='不能超过最大数额！';	
+			    	}
+			        break;
+			    default:
+					return true;   
+			}
+			if(!result){
+				ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+			}
+		}
+		return result;
+	}
+	
+	function copyTxt(btn,txt){
+		var clipboard = new ClipboardJS(btn, {
+	        target: function() {
+	            return document.querySelector(txt);
+	        }
+	   	});
+	    clipboard.on('success', function(e) {
+	        ck.msg({'content':'${common40}','time':1,'shade':false});
+	    });
+	    clipboard.on('error', function(e) {
+	        ck.msg({'content':'${common41}','time':1,'shade':false});
+	    });
+	}
+	
+	
+	
+	$(function(){
+		$('.lanNavBox .select').click(function(){
+			if($(this).next('.lanLink:visible').length>0){
+				$(this).next('.lanLink').hide();
+			}else{
+				$(this).next('.lanLink').show();
+			}
+		})
+		$('.rightBtn').click(function(){
+			$('.popNav').addClass('openNav');
+		});
+		$('.clickBg').click(function(){
+			$('.popNav').removeClass('openNav');
+		});
+		$('body').on('touchmove',function(){
+			var scrollH=parseInt($(document).scrollTop());
+			var navh=parseInt($('.topH').height());
+			if($('.hosTop').length>0 && !$('.hosTop').hasClass('hosWrite')){
+				if(scrollH>navh){
+	            	if(!$('.hosTop').hasClass('blackBg')){
+	            		$('.hosTop').addClass('blackBg');
+	            	}
+	            }else{
+	            	if($('.hosTop').hasClass('blackBg')){
+	            		$('.hosTop').removeClass('blackBg');
+	            	}
+	            } 
+			}
+        })
+	})
+	
+	function getImgcode(val){
+		//var form = new FormData();
+		var result 
+    	$.ajax({
+    		url: "/login/validGraphicCode?validCode="+val,
+    	    type: "post",
+    	    async: false,
+    	    //data: form,
+    	    processData: false,
+    	    contentType: false,
+    	    success: function(data){
+    	    	result =  data == 1 ? true : false;
+    	    }
+    	});
+		return result;
+	}
+	
+	function GetRequest() {   
+		   var url = location.search; //获取url中"?"符后的字串   
+		   var theRequest = new Object();   
+		   if (url.indexOf("?") != -1) {   
+		      var str = url.substr(1);   
+		      strs = str.split("&");   
+		      for(var i = 0; i < strs.length; i ++) {   
+		         theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);   
+		      }   
+		   }   
+		   return theRequest;   
+	} 
+	
+	function getpass(){
+		$.ajax({  
+	         url: "/enroll/validationcode?phone=" + $('#phone').val() + "&valicode=" + $('#randomcode').val(),
+	         type: 'POST',  
+	         //data: form,  
+	         async: true,  
+	         cache: false,  
+	         contentType: false,  
+	         processData: false,  
+	         success: function (data) {  
+	        	 console.log(data);
+	        	 data=JSON.parse(data);
+	        	 if(data.errorCode == '0000'){
+	        		 //console.log(data.obj);
+					$('#smscode').val(data.obj);
+	        	 }else{
+	        	 	var errorMsg = '';
+	        	 	if(data.errorCode == '9998'){
+	        	 		errorMsg = '${common30}';
+	        	 	}else if(data.errorCode == '9997'){
+	        	 		errorMsg = '${common31}';
+	        	 	}else if(data.errorCode == '9996'){
+	        	 		errorMsg = '${common32}';
+	        	 	}else if(data.errorCode == '9995'){
+	        	 		errorMsg = '${common33}';
+	        	 	}else if(data.errorCode == '9994'){
+	        	 		errorMsg = '${common34}';
+	        	 	}else if(data.errorCode == '9993'){
+	        	 		errorMsg = '${common35}';
+	        	 	}else if(data.errorCode == '9992'){
+	        	 		errorMsg = '${common36}';
+	        	 	}else if(data.errorCode == '9991'){
+	        	 		errorMsg = '${common37}';
+	        	 	}else if(data.errorCode == '9990'){
+	        	 		errorMsg = '${common38}';
+	        	 	}else if(data.errorCode == '9989'){
+	        	 		errorMsg = '${common39}';
+	        	 	}else if(data.errorCode == '9988'){
+	        	 		errorMsg = '${common18_1}';
+	        	 	}else if(data.errorCode == '9987'){
+	        	 		errorMsg = '${common14}';
+	        	 	}
+	        	 	if (!errorMsg){
+	        	 		ck.msg({'content':errorMsg,'time':60,'shade':false,'styleName':'msgWrite'});
+	        	 	}
+	        	 }
+	         },  
+	         error: function (data) {  
+	        	  
+	         }  
+	   });
+	}
+	var oldHash=window.location.hash;
+	function hashChangeFire(){
+		if($('.xieyiBox').length>0){
+			if(window.location.hash.indexOf('xieyi')>=0){
+				$('.xieyiBox').css('right','0');
+			}else{
+				$('.xieyiBox').css('right','-100%');
+			} 
+		}
+	}
+	function isHashChanged(){
+    	if(oldHash==window.location.hash){
+    		return false;
+    	}else{
+    		oldHash=window.location.hash;
+    		return true;
+    	};
+    }
+	function downloadWhitePaper(){
+		var storage = window.localStorage;
+		var lang = storage.getItem("localLang");
+    	location.href="/login/downloadwhitepaper?language="+lang;
+    }	
+    function photoCompress(file,w,obj){
+        var ready=new FileReader();
+        ready.readAsDataURL(file);
+        ready.onload=function(){
+            var re=this.result;
+            var imageWh = new Image();
+            if(w.quality<1){
+            	canvasDataURL(re,w,obj);
+            }else{
+            	$(obj).nextAll('.upFileVal').val(re);
+            	$(obj).nextAll('.upFileImg').attr('src',re);
+            }
+        }
+    }
+	function canvasDataURL(path,obj,setObj){
+        var img = new Image();
+        img.src = path;
+        img.onload = function(){
+            var that = this;
+            // 默认按比例压缩
+            var w = that.width,
+                h = that.height,
+                scale = w / h;
+            /*if(scale<1){
+            	var imgw=$(setObj).parent().width();
+            	console.log(imgw);
+            	$(setObj).nextAll('.upFileImg').css({'transform':'rotate(90deg)','height':imgw,'width':'auto'}); 
+            }else{
+            	var imgw=$(setObj).parent().width();
+            	$(setObj).nextAll('.upFileImg').css({'transform':'rotate(0deg)','width':imgw,'height':'auto'}); 
+            };*/
+            w = obj.width || w;
+            h = obj.height || (w / scale);
+            var quality = 0.7;  // 默认图片质量为0.7
+            //生成canvas
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            // 创建属性节点
+            var anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            var anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+            ctx.drawImage(that, 0, 0, w, h);
+            // 图像质量
+            if(obj.quality && obj.quality <= 1 && obj.quality > 0){
+                quality = obj.quality;
+            }
+            // quality值越小，所绘制出的图像越模糊
+            var base64 = canvas.toDataURL('image/jpeg', quality);
+            // 回调函数返回base64的值
+            $(setObj).nextAll('.upFileVal').val(base64);
+           	$(setObj).nextAll('.upFileImg').attr('src',base64);
+        }
+    }
+	
+    //img转化成BLOB
+    function loadImageToBlob(i, name, url, callback) {  
+        if(!url || !callback) return false;  
+        var xhr = new XMLHttpRequest();  
+        xhr.open('get', url, true);  
+        xhr.responseType = 'blob';  
+        xhr.onload = function() {  
+            // 注意这里的this.response 是一个blob对象 就是文件对象  
+            callback(i, name, this.status == 200 ? this.response : false);  
+        }  
+        xhr.send();  
+        return true;  
+    } 	
+    
+ 	//隐藏字符串指定前后长度信息
+	function hideMessage(str,frontLen,endLen){
+		var len = str.length-frontLen-endLen;
+		var tmp = '';
+		for (var i=0;i<len;i++) {
+			tmp+='*';
+		}
+		return str.substring(0,frontLen)+tmp+str.substring(str.length-endLen);
+	}
+    
+    function numFormat(num){
+    	num = parseFloat(num);
+		var group = num.toString().split(".");
+		if(group.length == 2){
+			var num2 = group[1];
+			if(num2.length >= 2){
+				return parseFloat(num);
+			}
+		}
+		return num.toFixed(2);
+	}
+</script>

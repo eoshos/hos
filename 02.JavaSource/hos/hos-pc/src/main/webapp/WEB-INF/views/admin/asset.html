@@ -53,11 +53,20 @@
 										rows[i].dcFlag = window.homepage_31;
 									}
 								}
+								
+								var notes = '';
+								if(rows[i].notes == "1"){
+									notes = window.homepage_38;
+								}else if(rows[i].notes == "2"){
+									notes = window.homepage_39;
+								}
+								
 								$(
 									'<li>'+ 
 									rows[i].dcFlag + '<br>' + 
 									'<i>' + rows[i].gmtCreatedStr + '</i>' + 
 									'<span>' + rows[i].coinNumber + '</span>' +
+									'<em>' + notes + '</em>' + 
 									'</li>'		
 								).appendTo($('#assetDetails'));
 							}

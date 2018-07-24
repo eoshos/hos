@@ -43,7 +43,7 @@
 						data = JSON.parse(data);
 						len=Math.ceil(data.total/size);
 						if(len<1 || num>=len){
-							$('.assetbtn').html('<p align="center" style="color:#bbbdc2;background:#f5f6fa;font-size:14px">已经到底了</p>');
+							$('.assetbtn').html('<p align="center" style="color:#bbbdc2;background:#f5f6fa;font-size:14px">${homepage_40}</p>');
 						}
 						if (data.errorCode = '0000') {
 							var rows = data.rows;
@@ -63,11 +63,20 @@
 										rows[i].dcFlag = '${homepage_31}';
 									}
 								}
+								
+								var notes = '';
+								if(rows[i].notes == "1"){
+									notes = '${homepage_38}';
+								}else if(rows[i].notes == "2"){
+									notes = '${homepage_39}';
+								}
+								
 								$(
 									'<li>'+ 
 									rows[i].dcFlag + '<br>' + 
 									'<i>' + rows[i].gmtCreatedStr + '</i>' + 
 									'<span>' + rows[i].coinNumber + '</span>' +
+									'<em>' + notes + '</em>' + 
 									'</li>'		
 								).appendTo($('#assetDetails'));
 							}

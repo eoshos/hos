@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<#include "/wap/common/top.html">
+		<title>${withdraw_1}</title>
+	</head>
+	<body style="background: #fff;">
+		<input type="hidden" name="phone" id="phone" value="${phone}"/>
+		<div class="realTop">
+			<a href="javascript:history.back(-1)" class="return"><img src="/static-wap/images/hsBtn.jpg"/></a>
+			${withdraw_1}
+		</div>
+		<div class="heigh3"></div>
+		<div class="getcon">
+			<div class="tab">
+			    <a href="javascript:" class="active">${withdraw_6}</a><a href="javascript:">${withdraw_7}</a>						
+			</div>
+			<form action="" id="withdraw" autocomplete="off">
+				<div class="getall">
+					<label>${withdraw_8}</label><span id="coinAvailable">${coinAvailable}</span>HOS
+				</div>
+				<div>
+					<label for="eosAccount">${withdraw_9}</label>
+					<input type="text" placeholder="${withdraw_10}" id="eosAccount" name="eosAccount" maxlength="12" onblur="checkForm('eosAccount')" />
+				</div>
+				<div class="tag">
+					<label for="exchangeAccount">${withdraw_14}</label>
+					<input type="text" placeholder="${withdraw_16}" id="exchangeAccount" name="exchangeAccount"  onblur="checkForm('exchangeAccount')" />
+				</div>
+				<div class="coinNumber">
+					<label for="coinNumber">${withdraw_11}</label>
+					<input type="text" placeholder="${withdraw_12}" id="coinNumber" name="coinNumber"  onblur="checkForm('coinNumber')" /><span>HOS</span><a href="javascript:" class="all">全部</a>
+				</div>
+				<a href="javascript:" class="submit" onclick="doSubmit()"/>${withdraw_1}</a>
+			</form>
+		</div>
+		<div class="safewrap">
+			<div class="verify">
+					<h3><img onclick="shut()" src="/static-wap/images/left.png" alt="" />${withdraw_23}</h3>
+					<form id="playFrom">
+						<div>		
+						    <input type="text" placeholder="${common6_2}" maxlength="4" name="valicode" id="valicode"/>
+						    <img class="codeImg"  name="valicode" src="/login/validimg.html" onclick="this.src='/login/validimg.html?t=' + Math.random();" alt="${common6_5}" />
+						</div>
+						<div>		
+						    <input type="tel" placeholder="${common6_4}" maxlength="4" name="phonecode" id="phonecode"/>
+						    <a href="javascript:" class="checktime" onclick="getPhoneCode()">${common8}</a>
+						</div>							
+						<a href="javascript:" class="submit" onclick="withDraw()">${withdraw_25}</a>
+					</form>
+				</div>
+			</div>
+		<script>
+			var accountType = '1';
+			function getPhoneCode(){
+				if($("input[name=valicode]").val()==""){
+					msg="${common31}"
+					ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					return
+				}
+				var countDown = 60;
+				
+				$.ajax({  
+			         url: "/enroll/validationcode?phone=" + ${userName} + "&valicode=" + $('#valicode').val(),
+			         type: 'POST',  
+			         //data: form,  
+			         async: true,  
+			         cache: false,  
+			         contentType: false,  
+			         processData: false,  
+			         success: function (data) {  
+			        	 console.log(data);
+			        	 data=JSON.parse(data);
+			        	 if(data.errorCode == '0000'){
+			        		 console.log(data.errorMsg);
+			        		 $('.checktime').html(countDown + '${common17}').addClass("hui");
+			 				var timer = setInterval(function() {
+			 					countDown--;
+			 					if (countDown) {
+			 						$('.checktime').html(countDown + '${common17}');
+			 					} else {
+			 						clearInterval(timer);
+			 						$('.checktime').html('${withdraw_24}').removeClass("hui").bind("click",getPhoneCode);
+			 					}
+			 				}, 1000);
+			        	 }else{
+			        	 	console.log(data.errorCode);
+			        	 	if(data.errorCode == '9998'){
+			        	 		msg="${common30}";	
+			        	 	}else if(data.errorCode == '9993'){
+			        	 		msg="${common35}";	
+			        	 	}else if(data.errorCode == '9992'){
+			        	 		msg="${common36}";	
+			        	 	}
+							ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+			        	 }
+			         },  
+			         error: function (data) {  
+			        	  
+			         }  
+			   });
+			}
+			function shut(){
+				$(".safewrap").hide()
+				$(".verify").css("left","100%");
+				$("#playFrom div input").val("")
+			}
+			 var mon=parseInt($(".getall span").html());
+			 $(".all").click(function(){
+			 	$("input[name=coinNumber]").val(mon)
+			 })
+			$(".tab a").click(function(){
+				$(this).addClass("active").siblings().removeClass("active");
+			})
+			$(".tab a:first-child").click(function(){
+				$(".tag").hide();
+				accountType = '1';
+				$('#exchangeAccount').val('-1');
+			})
+			$(".tab a:nth-child(2)").click(function(){
+				$(".tag").show();
+				accountType = '2';
+				$('#exchangeAccount').val('');
+			})
+			//按语言喜好重定向
+			var storage = window.localStorage;
+			if (!storage.getItem("localLang")){
+				storage.setItem("localLang", 'en');
+			}		
+			var thisurl = window.location.href;
+			if (thisurl.indexOf(storage.getItem("localLang")) < 0){
+				window.location.href="/homepage/withdraw?devtype=wap&lang=" + storage.getItem("localLang");
+			}	
+		
+			function num(obj){
+		    	var n=parseFloat(obj.html());
+		    	var n1=numFormat(n);
+		    	obj.html(n1)
+		    }
+			
+			num($("#coinAvailable"));
+	        
+	        function checkForm(name){
+	    		var msg='';
+	    		var _this=$('[name = '+name+']');
+	    		var val=_this.val().replace(/\s+/g,"");
+	    		var card = /^(^\d{18}$|^\d{17}(\d|X|x|y|Y))$/;
+	    		var user=/^([1-5a-z]{12})+$/;
+	    	    var tag=/^(\w)+$/;
+	    		var result=false;
+	    		if(val==''){
+	    			switch(name)
+	    			{
+	    			    case 'eosAccount':
+	    			        msg="${withdraw_10}";	
+	    			        break; 
+	    			    case 'exchangeAccount':
+	    			        msg="${withdraw_15}";	
+	    			        break; 
+	    			    case 'coinNumber':
+	    			        msg="${withdraw_20}";	
+	    			        break;
+	    			}
+	    			if(!result){
+	    				console.log(name+'----'+msg);
+	    				ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+	    			}
+	    		}else{
+	    			switch(name)
+	    			{
+	    			    case 'eosAccount':
+	    			        if(user.test(val)){
+	    			    		result=true;
+	    			    	}else{
+	    			    		msg="${withdraw_18}";	
+	    			    	}
+	    			        break;
+	    			    case 'exchangeAccount':
+	    			        if(tag.test(val)){
+	    			    		result=true;
+	    			    	}else{
+	    			    		msg="${withdraw_16}";	
+	    			    	}
+	    			        break;
+	    			    case 'coinNumber':
+	    			        var mon=parseInt($(".getall span").html());
+	    			        if(val<=mon){
+	    			    		result=true;
+	    			    	}else{
+	    			    		msg='${withdraw_22}';	
+	    			    	}
+	    			        break;
+	    			    default:
+	    					return true;   
+	    			}
+	    			if(!result){
+	    				ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+	    			}
+	    		}
+	    		return result;
+	    	}
+	        
+			function doSubmit(){
+				if($(".tag").is(':visible')){
+					if(!(checkForm('eosAccount') && checkForm('coinNumber') && checkForm('exchangeAccount'))){
+					     return;
+				    }
+				}else{
+					if(!(checkForm('eosAccount') && checkForm('coinNumber'))){
+					     return;
+				    }
+				}	
+				$(".safewrap").show();
+				$(".verify").css("left","0");
+			}
+			
+			
+			function withDraw(){
+				var valicode = $('#valicode').val();
+				var phonecode = $('#phonecode').val();
+				var eosAccount = $('#eosAccount').val();
+				var exchangeAccount = $('#exchangeAccount').val();
+				var coinNumber = $('#coinNumber').val();
+				if (valicode==""){
+					msg="${common31}";
+					ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					return;
+				}
+				if (phonecode==""){
+					msg="${common32}";
+					ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					return;
+				}
+				var form = new FormData();
+				form.append("phonecode", $('#phonecode').val());
+				form.append("hosTradeCoinToChain.eosAccount", $('#eosAccount').val());
+				form.append("hosTradeCoinToChain.exchangeAccount", $('#exchangeAccount').val());
+				form.append("hosTradeCoinToChain.coinNumber", $(
+						'#coinNumber').val());
+				form.append("hosTradeCoinToChain.accountType", accountType);
+				console.log(form);
+				$.ajax({
+					url : "/asset/withdraw",
+					type : "post",
+					data : form,
+					processData : false,
+					contentType : false,
+					success : function(data) {
+						data=JSON.parse(data);
+						var storage = window.localStorage;
+						if(data.errorCode == '0000'){
+							var lang = storage.getItem("localLang");
+							msg="${withdraw_27}";
+							$(".safewrap").hide()
+							location='/homepage/index.html?devtype=wap&lang='+window.localStorage.getItem("localLang");
+						}else{
+							if(data.errorCode == '9991'){
+								msg="${common37}";
+			        	 	}else if(data.errorCode == '9982'){
+			        	 		msg="${homepage_37}";
+			        	 	}else if(data.errorCode == '9981'){
+			        	 		msg="${withdraw_21}";
+			        	 	}else if(data.errorCode == '9980'){
+			        	 		msg="${withdraw_22}";
+			        	 	}else{
+			        	 		msg="${withdraw_28}";
+			        	 	}							
+						}
+						ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					}
+				});
+			}
+			
+		</script>
+	</body>
+</html>

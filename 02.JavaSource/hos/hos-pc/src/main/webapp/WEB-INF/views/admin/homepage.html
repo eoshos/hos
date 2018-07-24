@@ -38,8 +38,8 @@
 					<p><a href="javascript:;" id="realStat"></a></p>
 					<p>${homepage_3}</p>
 					<input id="yqm" readonly="readonly">
-					<p><a href="javascript:;" class="copy" onclick="copy()">${homepage_4}</a><a href="javascript:;" class="jl" onclick="listInvite()">${homepage_5}></a></p>
-					<p><a href="javascript:;" class="yq">${homepage_6}</a><a href="javascript:;" class="hb">${homepage_7}</a></p>
+					<p><a href="javascript:;" class="copy" onclick="copy()">${homepage_4}</a><a href="javascript:;" class="jl" onclick="listInvite(),showbox(this.className)">${homepage_5}></a></p>
+					<p><a href="javascript:;" class="yq">${homepage_6}</a><a href="javascript:;" class="hb" onclick="showbox(this.className)">${homepage_7}</a></p>
 					<div class="yqhy">
 						<p class="bu"></p>
 						<ul>
@@ -62,7 +62,7 @@
 					</div>
 				</div>
 				<div class="con con2">
-					<h3>${homepage_10}<a href="javascript:;" class="asset">${homepage_23}</a></h3>
+					<h3>${homepage_10}<a href="javascript:;" class="asset" onclick="showbox(this.className)">${homepage_23}</a></h3>
 					<p class="num1">
 						${coinTotal}
 					</p>
@@ -70,10 +70,10 @@
 						<i>${homepage_24} <small class="num2">${coinAvailable}</small></i><i>${homepage_25} <small class="num3">${coinFreeze}</small><span class="poi">i</span></i>
 					</p>
 					<p class="point">${homepage_26}</p>
-					<p><a href="javascript:">提币</a></p>
+					<p><a href="javascript:" onclick="withdraw()">${homepage_32}</a></p>
 				</div>
 				<div class="con con3">
-					<h3>${homepage_12}<a href="javascript:;" class="xq">${homepage_12_1}</a></h3>
+					<h3>${homepage_12}<a href="javascript:;" class="xq" onclick="showbox(this.className)">${homepage_12_1}</a></h3>
 					<ul>
 						<li>${homepage_13}</li>
 						<li>${homepage_14}</li>
@@ -85,19 +85,28 @@
 			</div>
 			<div class="wrap">
 				<div class="con4" id="transTable">
-					<h3>${homepage_17_1}</h3>
-					<table id="accountTrans">
+					<h3><a href="/browser/">${homepage_35}</a>${homepage_17_1}</h3>
+					<table>
 						<tr>
-							<th>TxHash</th>
+							<th width="20%">TxHash</th>
 							<th>${homepage_18_1}</th>
 							<th>${homepage_18_2}</th>
-							<th>${homepage_18_3}</th>
-							<th>${homepage_18_4}</th>
+							<th width="15%">${homepage_18_3}</th>
+							<th width="15%">${homepage_18_4}</th>
 							<th>${homepage_18_5}</th>
-							<th>${homepage_18_6}</th>
-						</tr>						
+							<th>${withdraw_14}</th>
+						</tr>
+						<tbody id="accountTrans">
+							<tr>
+								<td colspan="7"><p>${homepage_18_7}</p></td>
+							</tr>
+						</tbody>
 					</table>
-					<p>${homepage_18_7}</p>
+					<div class="assetPage">
+						<button id="pre" onclick="preFn(this)" disabled="disabled"><</button>
+						<div id="showPage" class="in"></div>	
+						<button id="next" onclick="nextFn(this)">></button>
+					</div>					
 				</div>
 			</div>
 				
@@ -113,7 +122,7 @@
 						<h3>${invitationpage_1}<span>${invitationpage_2_1} ${numberInvite} ${invitationpage_2_2} ${numberReward} ${invitationpage_2_3}</span></h3>
 						<p class="tit"><span>${invitationpage_3_1}</span><span>${invitationpage_3_2}</span><span>${invitationpage_3_3}</span><span>${invitationpage_3_4}</span></p>				
 						<div class="inn">
-						<table id = "listInvite">	
+						<table id="listInvite">
 						</table>
 					</div>
 					</div>
@@ -145,17 +154,67 @@
 					</div>					
                 </div>
 			</div>
-			<div class="blk2">
+			<div class="blk2" id="withdraw1">
 				<div class="record2">
-					<div class="tips1">
-						<h3>温馨提示</h3>
-						<p>实名认证完成后，才能进行提币操作。</p>
-						<a href="javascript:" class="clos">确定</a>
+					<div class="tips">
+						<h3>${homepage_36}</h3>
+						<p>${homepage_37}</p>
+						<a href="javascript:" class="clos">${homepage_21}</a>
 					</div>
 				</div>
 			</div>
-		
+			<div class="blk2" id="withdraw2">
+				<div class="record2">
+					<div class="tips">
+						<h3>${homepage_36}</h3>
+						<p>${homepage_41}</p>
+						<a href="javascript:" class="clos">${homepage_21}</a>
+					</div>
+				</div>
+			</div>
+		<script src="/static/js/page.js"></script>
 		<script>
+			function getData(num,size){
+				var _num=num;
+				if(num<=0){
+					num=1;
+				}
+				$.ajax({
+					url : "/homepage/myTrades?offset="+(num-1)*size+"&limit="+size+"&userId=${userId}",
+					type : "post",
+					processData : false,
+					contentType : false,
+					success : function(data) {
+	   	        	 	data=JSON.parse(data);
+						if(data.errorCode = '0000'){
+							var rows = data.rows;
+							if(_num<=0){
+								creatPage(data.total,6);
+							}
+							console.log(rows[0])
+							var html='';
+							if(rows.length>0){
+								$('#accountTrans').empty();
+								for(var i = 0;i<rows.length;i++){
+									var str=rows[i].txHash;
+									str = str.substring(0,25)+'...';
+									html+='<tr>'+
+									'<td><a href="/browser/transactions/'+rows[i].txHash+'">'+str+'</a></td>'+
+									'<td><a href="/browser/blocks/'+rows[i].blockId+'">'+rows[i].blockId+'</a></td>'+
+									'<td>'+rows[i].gmtCreatedStr+'</td>'+
+									'<td><a href="/browser/accounts/'+rows[i].addrFrom+'">'+rows[i].addrFrom+'</a></td>'+
+									'<td><a href="/browser/accounts/'+rows[i].addrTo+'">'+rows[i].addrTo+'</a></td>'+
+									'<td>'+rows[i].coinNumber+'</td>'+
+									'<td>'+rows[i].tag+'</td>'+
+								'</tr>'
+								}
+								$('#accountTrans').append(html);
+							}
+						}
+					}
+				});
+			}	
+			getData(0,6);	
 			$(".poi").hover(function(){
 				$(".point").show()
 			},function(){
@@ -239,46 +298,37 @@
 			var shareqqzonestring='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?summary='+title+'&url='+encodeURIComponent(url)+'&pics='+picurl;
 			window.open(shareqqzonestring);
 			}
-		$(".zh,.zh div").hover(function(){
-			$(".zh div").show()
+		$(".zh,.lang").hover(function(){
+			$(this).find("div").show()
 		},function(){
-			$(".zh div").hide()
-		})
-		$(".lang").hover(function(){
-			$(".lang div").show()
-		},function(){
-			$(".lang div").hide()
+			$(this).find("div").hide()
 		})
 		$(".yq,.yqhy").hover(function(){
 			$(".yqhy").show();
 		},function(){
 			$(".yqhy").hide();
 		})
-	    $(".jl").click(function(){
+	   function showbox(v){
+	    	//var _this=$('.'+v+' ')
 	    	$(".blk").css("display","table");
-	    	$(".record>div").hide();
- 	    	$(".yqjl").css("display","inline-block");
-	    })
-	  $(".hb").click(function(){
-	    	$(".blk").css("display","table");
-	    	$(".record>div").hide();
-	    	$(".zshb").show()
-	    })
-	  $(".xq").click(function(){
-	    	$(".blk").css("display","table");
-	    	$(".record>div").hide();
-	    	$(".ckxq").show()
-	    })
-	   $(".asset").click(function(){
-	    	$(".blk").css("display","table");
-	    	$(".record>div").hide();
-	    	$(".myiframe").show()
-	    })
-	   $(".shut").click(function(){
-		   $(".blk").css("display","none");
-	   })
-	   $(".clos").click(function(){
-		   $(".blk2").css("display","none");
+	    	$(".record>div").hide();	    	
+	    	switch(v){
+	    		case 'jl':
+	    		    $(".yqjl").show();
+	    		    break;
+	    		case 'hb':
+	    		    $(".zshb").show();
+	    		    break;
+	    		case 'xq':
+	    		    $(".ckxq").show();
+	    		    break;
+	    		case 'asset':
+	    		    $(".myiframe").show();
+	    		    break;    
+	    	}
+	    }
+	   $(".shut,.clos").click(function(){
+		   $(".blk,.blk2").hide()
 	   })
 	    function listInvite(){
 			$.ajax({
@@ -287,7 +337,6 @@
 				processData : false,
 				contentType : false,
 				success : function(data) {
-					console.log(data);
    	        	 	data=JSON.parse(data);
 					if(data.errorCode = '0000'){
 						var rows = data.rows;
@@ -320,7 +369,6 @@
 				processData : false,
 				contentType : false,
 				success : function(data) {
-					console.log(data);
    	        	 	data=JSON.parse(data);
 					if(data.errorCode = '0000'){
 						var rows = data.rows;
@@ -424,7 +472,23 @@
 	    childFrameObj.contentWindow.homepage_30 = '${homepage_30}';
 	    childFrameObj.contentWindow.homepage_31 = '${homepage_31}';
 	    childFrameObj.contentWindow.homepage_32 = '${homepage_32}';
+	    childFrameObj.contentWindow.homepage_38 = '${homepage_38}';
+	    childFrameObj.contentWindow.homepage_39 = '${homepage_39}';
 		
+	    function withdraw(){
+	    	var realStat = ${realStat};
+	    	var withdraw_available = '${withdraw_available}';
+	    	if(realStat != '2'){
+	    		$("#withdraw1").css("display","table");
+	    	}else if(withdraw_available == '0'){
+	    		$("#withdraw2").css("display","table");
+	    	}else{
+	    		var storage = window.localStorage;
+				var lang = storage.getItem("localLang");
+		    	location.href="/homepage/withdraw?lang="+lang;
+	    	}
+	    }
+	    
 		</script>
 	</body>
 </html>

@@ -143,23 +143,6 @@ public class EnrollController extends BaseController {
 			cKResponse.setErrorMsg(ConstantApi.ERROR_MSG.MSG_9984);
 			return cKResponse;
 		}
-		count++;
-		// 计算到凌晨0点的时间间隔
-		Date nowDate = new Date();
-		long now = nowDate.getTime() / 1000;//当前时间
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(nowDate);
-		calendar.add(Calendar.DAY_OF_MONTH, 1);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		long future = calendar.getTimeInMillis() / 1000;//第二天凌晨
-		success = count == 1 ? redisUtil.set(ip, count) : redisUtil.set(ip, count, future - now);
-		if (!success) {
-			cKResponse.setErrorCode(ConstantApi.ERROR_CODE.CODE_9986);
-			cKResponse.setErrorMsg("保存ip信息到redis异常！");
-			return cKResponse;
-		}
 		
 		hosUserBo.getHosUser().setUserName(hosUserBo.getHosUser().getPhone());
 		hosUserBo.getHosUser().setUserType("1");
@@ -196,11 +179,30 @@ public class EnrollController extends BaseController {
 			// 新增用户信息和用户邀请信息
 			try {
 				cKResponse = hosUserService.saveUserInfo(hosUserBo);
+				//保存注册ip信息和次数
+				count++;
+				// 计算到凌晨0点的时间间隔
+				Date nowDate = new Date();
+				long now = nowDate.getTime() / 1000;//当前时间
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(nowDate);
+				calendar.add(Calendar.DAY_OF_MONTH, 1);
+				calendar.set(Calendar.HOUR_OF_DAY, 0);
+				calendar.set(Calendar.MINUTE, 0);
+				calendar.set(Calendar.SECOND, 0);
+				long future = calendar.getTimeInMillis() / 1000;//第二天凌晨
+				success = count == 1 ? redisUtil.set(ip, count) : redisUtil.set(ip, count, future - now);
+				if (!success) {
+					cKResponse.setErrorCode(ConstantApi.ERROR_CODE.CODE_9986);
+					cKResponse.setErrorMsg("保存ip信息到redis异常！");
+					return cKResponse;
+				}
 			} catch (SQLException e) {
 				logger.error(e.getMessage());
 				cKResponse.setErrorCode(ConstantApi.ERROR_CODE.CODE_9986);
 				cKResponse.setErrorMsg(e.getMessage());
 			}
+			
 		}
 		
 		return cKResponse;

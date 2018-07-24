@@ -561,6 +561,13 @@ public class BaseController {
 		String homepage_32 = getMessage(request, "homepage_32");
 		String homepage_33 = getMessage(request, "homepage_33");
 		String homepage_34 = getMessage(request, "homepage_34");
+		String homepage_35 = getMessage(request, "homepage_35");
+		String homepage_36 = getMessage(request, "homepage_36");
+		String homepage_37 = getMessage(request, "homepage_37");
+		String homepage_38 = getMessage(request, "homepage_38");
+		String homepage_39 = getMessage(request, "homepage_39");
+		String homepage_40 = getMessage(request, "homepage_40");
+		String homepage_41 = getMessage(request, "homepage_41");
 		String taskpage_0 = getMessage(request, "taskpage_0");
 		String taskpage_1_1 = getMessage(request, "taskpage_1_1");
 		String taskpage_1_2 = getMessage(request, "taskpage_1_2");
@@ -636,6 +643,13 @@ public class BaseController {
 		model.addAttribute("homepage_32", homepage_32);
 		model.addAttribute("homepage_33", homepage_33);
 		model.addAttribute("homepage_34", homepage_34);
+		model.addAttribute("homepage_35", homepage_35);
+		model.addAttribute("homepage_36", homepage_36);
+		model.addAttribute("homepage_37", homepage_37);
+		model.addAttribute("homepage_38", homepage_38);
+		model.addAttribute("homepage_39", homepage_39);
+		model.addAttribute("homepage_40", homepage_40);
+		model.addAttribute("homepage_41", homepage_41);
 		model.addAttribute("taskpage_0", taskpage_0);
 		model.addAttribute("taskpage_1_1", taskpage_1_1);
 		model.addAttribute("taskpage_1_2", taskpage_1_2);
@@ -658,10 +672,24 @@ public class BaseController {
 		model.addAttribute("invitationpage_3_3", invitationpage_3_3);
 		model.addAttribute("invitationpage_3_4", invitationpage_3_4);
 	}
+	
+	
 	protected void setModelProperties3(HttpServletRequest request, Model model){
         Locale currentLocale = RequestContextUtils.getLocale(request);
         String lang = currentLocale.getLanguage();
         model.addAttribute("localLang", lang);
+        
+        String homepage_1_1 = getMessage(request, "homepage_1_1");
+        String homepage_1_2 = getMessage(request, "homepage_1_2");
+        String homepage_1_3 = getMessage(request, "homepage_1_3");
+        String homepage_37 = getMessage(request, "homepage_37");
+        String withdraw_14 = getMessage(request, "withdraw_14");
+        
+        model.addAttribute("homepage_1_1", homepage_1_1);
+        model.addAttribute("homepage_1_2", homepage_1_2);
+        model.addAttribute("homepage_1_3", homepage_1_3);
+        model.addAttribute("homepage_37", homepage_37);
+        model.addAttribute("withdraw_14", withdraw_14);
 	}    
 	
 	/**
@@ -720,6 +748,77 @@ public class BaseController {
 		model.addAttribute("verification_20", verification_20);
 		model.addAttribute("verification_21", verification_21);
 		model.addAttribute("verification_22", verification_22);
+	}
+	
+	/**
+	 * 
+	* @Title: setModelProperties5 
+	* @Description: 设置提幣页的双语信息
+	* @param @param model  参数说明 
+	* @return void    返回类型 
+	* @throws
+	 */
+	protected void setModelProperties5(Model model){
+		String withdraw_1 = getMessage(request, "withdraw_1");
+		String withdraw_2 = getMessage(request, "withdraw_2");
+		String withdraw_3 = getMessage(request, "withdraw_3");
+		String withdraw_4 = getMessage(request, "withdraw_4");
+		String withdraw_5 = getMessage(request, "withdraw_5");
+		String withdraw_6 = getMessage(request, "withdraw_6");
+		String withdraw_7 = getMessage(request, "withdraw_7");
+		String withdraw_8 = getMessage(request, "withdraw_8");
+		String withdraw_9 = getMessage(request, "withdraw_9");
+		String withdraw_10 = getMessage(request, "withdraw_10");
+		String withdraw_11 = getMessage(request, "withdraw_11");
+		String withdraw_12 = getMessage(request, "withdraw_12");
+		String withdraw_13 = getMessage(request, "withdraw_13");
+		String withdraw_14 = getMessage(request, "withdraw_14");
+		String withdraw_15 = getMessage(request, "withdraw_15");
+		String withdraw_16 = getMessage(request, "withdraw_16");
+		String withdraw_17 = getMessage(request, "withdraw_17");
+		String withdraw_18 = getMessage(request, "withdraw_18");
+		String withdraw_19 = getMessage(request, "withdraw_19");
+		String withdraw_20 = getMessage(request, "withdraw_20");
+		String withdraw_21 = getMessage(request, "withdraw_21");
+		String withdraw_22 = getMessage(request, "withdraw_22");
+		String withdraw_23 = getMessage(request, "withdraw_23");
+		String withdraw_24 = getMessage(request, "withdraw_24");
+		String withdraw_25 = getMessage(request, "withdraw_25");
+		String withdraw_26 = getMessage(request, "withdraw_26");
+		String withdraw_27 = getMessage(request, "withdraw_27");
+		String withdraw_28 = getMessage(request, "withdraw_28");
+		String withdraw_29 = getMessage(request, "withdraw_29");
+
+
+		model.addAttribute("withdraw_1", withdraw_1);
+		model.addAttribute("withdraw_2", withdraw_2);
+		model.addAttribute("withdraw_3", withdraw_3);
+		model.addAttribute("withdraw_4", withdraw_4);
+		model.addAttribute("withdraw_5", withdraw_5);
+		model.addAttribute("withdraw_6", withdraw_6);
+		model.addAttribute("withdraw_7", withdraw_7);
+		model.addAttribute("withdraw_8", withdraw_8);
+		model.addAttribute("withdraw_9", withdraw_9);
+		model.addAttribute("withdraw_10", withdraw_10);
+		model.addAttribute("withdraw_11", withdraw_11);
+		model.addAttribute("withdraw_12", withdraw_12);
+		model.addAttribute("withdraw_13", withdraw_13);
+		model.addAttribute("withdraw_14", withdraw_14);
+		model.addAttribute("withdraw_15", withdraw_15);
+		model.addAttribute("withdraw_16", withdraw_16);
+		model.addAttribute("withdraw_17", withdraw_17);
+		model.addAttribute("withdraw_18", withdraw_18);
+		model.addAttribute("withdraw_19", withdraw_19);
+		model.addAttribute("withdraw_20", withdraw_20);
+		model.addAttribute("withdraw_21", withdraw_21);
+		model.addAttribute("withdraw_22", withdraw_22);
+		model.addAttribute("withdraw_23", withdraw_23);
+		model.addAttribute("withdraw_24", withdraw_24);
+		model.addAttribute("withdraw_25", withdraw_25);
+		model.addAttribute("withdraw_26", withdraw_26);
+		model.addAttribute("withdraw_27", withdraw_27);
+		model.addAttribute("withdraw_28", withdraw_28);
+		model.addAttribute("withdraw_29", withdraw_29);
 	}
 	
 	/**

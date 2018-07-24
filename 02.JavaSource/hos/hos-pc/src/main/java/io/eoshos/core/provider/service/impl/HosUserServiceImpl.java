@@ -303,12 +303,13 @@ public class HosUserServiceImpl implements IHosUserService {
 		hosUser.setInviteCode(inviteCode);
 
 		//生成图片二维码
-		int code = QrCodeUtil.qrcode(hosUser.getPhone(), hosUser.getInviteCode());
-		if(code != 1){
-			ckResponse.setErrorCode(ConstantApi.ERROR_CODE.CODE_9986);
-			ckResponse.setErrorMsg("生成二维码失败！");
-			return ckResponse;
-		}
+		//TODO 避免注册时重复点击，造成二维码被覆盖，二维码在登录时生成
+//		int code = QrCodeUtil.qrcode(hosUser.getPhone(), hosUser.getInviteCode());
+//		if(code != 1){
+//			ckResponse.setErrorCode(ConstantApi.ERROR_CODE.CODE_9986);
+//			ckResponse.setErrorMsg("生成二维码失败！");
+//			return ckResponse;
+//		}
 		
 		// 新增用户信息和用户邀请信息
 //		try {
@@ -352,8 +353,10 @@ public class HosUserServiceImpl implements IHosUserService {
 				return ckResponse;
 			}
 			map.put("hosUser", hosUserVo);
-			//将用户信息保存到redis中
-			redisUtil.hmset("userInfo" + phone, map, 86400);
+			if(hosUserVo != null){
+				//将用户信息保存到redis中
+				redisUtil.hmset("userInfo" + phone, map, 86400);
+			}
 		}
 
 		if (map.get("hosUser") == null) {

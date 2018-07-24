@@ -39,7 +39,7 @@
 			<p class="count">
 				<i>${homepage_24} <small class="num2">${coinAvailable}</small></i><i>${homepage_25} <small class="num3">${coinFreeze}</small><span onclick="showShare('tft')">i</span></i>
 			</p>
-			<p class="txt"><a href="javascript:" onclick="showShare('getcoin')">提币</a></p>
+			<p class="txt"><a href="javascript:" onclick="showShare('getcoin')">${homepage_32}</a></p>
 		</div>
 		<div class="userTask">
 			<h2 class="userTit"><a onclick="showShare('popTask')" class="look" href="javascript:;">${homepage_12_1}</a>${homepage_12}</h2>
@@ -51,8 +51,13 @@
 			</ul>
 		</div>
 		<div class="userTrans">
-			<h2 class="userTit">${homepage_17_1}</h2>
-			<p class="noData">${homepage_17}</p>
+			<h2 class="userTit"><a class="look" href="/browser/">${homepage_35}</a>${homepage_17_1}</h2>
+			<div id="hashList" class="hashList">
+				<!--<p class="noData">${homepage_17}</p>-->
+			</div>
+			<div class="assetbtn">
+				<a onclick="loadMore()">${homepage_34}</a>
+			</div>
 		</div>
 		<div class="hosPop" id="popShare">
 			<div class="shareBig">
@@ -140,8 +145,15 @@
 		</div>
 		<div class="hosPop" id="getcoin">
 			<div class="taskIn">
-				<h2>温馨提示</h2>
-				<p>实名认证完成后，才能进行提币操作。</p>
+				<h2>${homepage_36}</h2>
+				<p>${homepage_37}</p>
+			</div>
+			<button onclick="closePop()" class="closeBtn" type="button">${homepage_21}</button>
+		</div>
+		<div class="hosPop" id="getcoin2">
+			<div class="taskIn">
+				<h2>${homepage_36}</h2>
+				<p>${homepage_41}</p>
 			</div>
 			<button onclick="closePop()" class="closeBtn" type="button">${homepage_21}</button>
 		</div>
@@ -163,9 +175,60 @@
 				</div>
 			</div>
 		</div>
+		<div class="loading">
+			<div class="in">
+				<img src="/static-wap/images/loading.png"/>
+				<p>loading···</p>
+			</div>
+		</div>
 		<script src="/static-wap/js/clipboard.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="/static-wap/js/soshm.js" type="text/javascript" charset="utf-8"></script>
 		<script>
+			var num = 1;
+			var size = 6;
+			var len=0;
+			loadData(num,size);
+			function loadMore(){
+				num++;
+				loadData(num,size);
+			}
+			function loadData(num,size){
+				$('.loading').show();
+				$.ajax({
+					url : "/homepage/myTrades?offset="+(num-1)*size+"&limit="+size+"&userId="+${userId},
+					type : "post",
+					processData : false,
+					contentType : false,
+					success : function(data) {
+						data = JSON.parse(data);
+						len=Math.ceil(data.total/size);
+						if(len<1 || num>=len){
+							$('.assetbtn').html('<p align="center" style="color:#bbbdc2;background:#f5f6fa;font-size:14px">${homepage_40}</p>');
+						}
+						if (data.errorCode = '0000') {
+							var rows = data.rows;
+							var html='';
+							if(rows.length>0){
+								for(var i = 0;i<rows.length;i++){
+									var str=rows[i].txHash;
+									str = str.substring(0,12)+'...';
+									html+='<ul>'+
+									'<li><span class="title">TxHash</span><a href="/browser/transactions/'+rows[i].txHash+'">'+str+'</a></li>'+
+									'<li><span class="title">${homepage_18_1}</span>'+rows[i].blockId+'</td>'+
+									'<li><span class="title">${homepage_18_2}</span>'+rows[i].gmtCreatedStr+'</td>'+
+									'<li><span class="title">${homepage_18_3}</span><a href="/browser/accounts/'+rows[i].addrFrom+'">'+rows[i].addrFrom+'</a></li>'+
+									'<li><span class="title">${homepage_18_4}</span><a href="/browser/accounts/'+rows[i].addrTo+'">'+rows[i].addrTo+'</a></li>'+
+									'<li><span class="title">${homepage_18_5}</span>'+rows[i].coinNumber+'</li>'+
+									'<li><span class="title">${withdraw_14}</span>'+rows[i].tag+'</li>'+
+								'</ul>'
+								}
+								$('#hashList').append(html);
+							}
+						}
+						$('.loading').hide()
+					}
+				});
+			}
 			$(".poi").click(function(){
 				$(".point").css("opacity","1");
 				
@@ -195,6 +258,16 @@
 			    sites: ['weixin', 'weixintimeline', 'qq', 'qzone']
 			});
 			function showShare(id){
+				var withdraw_available = '${withdraw_available}';
+				if(id=='getcoin' && "${realStat}" == "2"){
+					if(withdraw_available == '1'){
+						var storage = window.localStorage;
+						var lang = storage.getItem("localLang") || 'zh';
+						window.location.href="/homepage/withdraw.html?devtype=wap&lang="+lang;
+						return;
+					}
+					id = 'getcoin2';
+				}				
 				$('#'+id).show();
 				$('html,body').css({'height':'100%','overflow':'hidden'});
 				if(id=='popHaibao'){
@@ -213,15 +286,15 @@
 				$('.hosPop').hide();
 			}
 			
-			function num(obj){
+			function numFor(obj){
 		    	var n=parseFloat(obj.html());
 		    	var n1=numFormat(n);
 		    	obj.html(n1)
 		    }
 			
-			num($(".money"));
-			num($(".num2"));
-			num($(".num3"));
+			numFor($(".money"));
+			numFor($(".num2"));
+			numFor($(".num3"));
 			
 		    function listInvite(){
 				$.ajax({
@@ -230,7 +303,6 @@
 					processData : false,
 					contentType : false,
 					success : function(data) {
-						console.log(data);
 	   	        	 	data=JSON.parse(data);
 						if(data.errorCode = '0000'){
 							var rows = data.rows;

@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -13,23 +15,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.chuangke18.framework.api.bean.Page;
 import com.chuangke18.framework.api.constant.ConstantApi;
 import com.chuangke18.framework.api.response.CKResponse;
 
+import io.eoshos.core.api.bean.dto.HosTradeListDto;
 import io.eoshos.core.api.bean.dto.HosUserAccountDto;
 import io.eoshos.core.api.bean.dto.HosUserDto;
 import io.eoshos.core.api.bean.dto.HosUserInviteDto;
+import io.eoshos.core.api.bean.vo.HosTradeListVo;
 import io.eoshos.core.api.bean.vo.HosUserAccountVo;
 import io.eoshos.core.api.bean.vo.HosUserVo;
+import io.eoshos.core.api.service.IHosTradeListService;
 import io.eoshos.core.api.service.IHosUserAccountService;
 import io.eoshos.core.api.service.IHosUserInviteService;
 import io.eoshos.core.api.service.IHosUserService;
 import io.eoshos.pc.util.QrCodeUtil;
+import io.eoshos.pc.util.StringUtil;
 
 /***
  * 
@@ -55,8 +64,14 @@ public class HomepageController extends BaseController {
 	
 	@Autowired
 	private IHosUserInviteService hosUserInviteService;
+	
+	@Autowired
+	private IHosTradeListService hosTradeListService;
 
 	private static String AUTH_USER = "auth_user";
+	
+	@Value("${withdraw_available}")
+	private String withdraw_available;
 	/**
 	 * 
 	* @Title: index 
@@ -72,6 +87,8 @@ public class HomepageController extends BaseController {
 		setModelProperties1(model);
 		setModelProperties2(model);
 		setModelProperties3(request, model);
+		
+		model.addAttribute("withdraw_available", withdraw_available);//提币功能开关
       
 		//session中数据不一定正确，实时查询为准
         HosUserVo hosUserVo = (HosUserVo) session.getAttribute(AUTH_USER);
@@ -251,18 +268,28 @@ public class HomepageController extends BaseController {
 	* @return String    返回类型 
 	* @throws
 	 */
-	@RequestMapping(value = "/extract", method = RequestMethod.GET)
-	public String extract(Model model, HttpServletRequest request) {
+	@RequestMapping(value = "/withdraw", method = RequestMethod.GET)
+	public String withdraw(Model model, HttpServletRequest request) {
+		setModelProperties1(model);
+		setModelProperties5(model);
 		setModelProperties3(request, model);
-		setModelProperties4(model);
 		
 		HosUserVo hosUserVo = (HosUserVo)session.getAttribute(AUTH_USER);
 		model.addAttribute("userName",hosUserVo.getPhone());
-		model.addAttribute("cardId", hosUserVo.getCardId());
-		model.addAttribute("realName", hosUserVo.getRealName());
+		
+		// 取用户账户信息
+		HosUserAccountDto hosUserAccountDto = new HosUserAccountDto();
+		hosUserAccountDto.setUserId(hosUserVo.getId());
+		CKResponse cKResponse = hosUserAccountService.getObject(hosUserAccountDto);
+		if (ConstantApi.ERROR_CODE.SUCCESS.equals(cKResponse.getErrorCode())) {
+			HosUserAccountVo hosUserAccountVo = (HosUserAccountVo) cKResponse.getObj();
+			model.addAttribute("coinTotal", hosUserAccountVo.getCoinTotal());// 币总数
+			model.addAttribute("coinAvailable", hosUserAccountVo.getCoinAvailable());// 可用币数
+			model.addAttribute("coinFreeze", hosUserAccountVo.getCoinFreeze());// 冻结币数
+		}
 		
 		String devtype = request.getParameter("devtype");
-		String url = StringUtils.equals("wap", devtype) ? "wap/extract" : "admin/extract";
+		String url = StringUtils.equals("wap", devtype) ? "wap/withdraw" : "admin/withdraw";
         return url;			
 	}
 	
@@ -278,8 +305,8 @@ public class HomepageController extends BaseController {
 	 */
 	@RequestMapping(value = "/browser", method = RequestMethod.GET)
 	public String browser(Model model, HttpServletRequest request) {
-		setModelProperties3(request, model);
-		setModelProperties4(model);
+		//setModelProperties3(request, model);
+		//setModelProperties4(model);
 		
 		HosUserVo hosUserVo = (HosUserVo)session.getAttribute(AUTH_USER);
 		model.addAttribute("userName",hosUserVo.getPhone());
@@ -289,6 +316,37 @@ public class HomepageController extends BaseController {
 		String devtype = request.getParameter("devtype");
 		//String url = StringUtils.equals("wap", devtype) ? "wap/extract" : "admin/extract";
         return "browser/index";			
+	}
+	
+	/**
+	 * 
+	* @Title: myTrades 
+	* @Description: 我的交易 
+	* @param @param model
+	* @param @param request
+	* @param @return  参数说明 
+	* @return String    返回类型 
+	 */
+	@RequestMapping(value="/myTrades", method = RequestMethod.POST)
+	@ResponseBody
+	public Page<HosTradeListVo> myTrades(HttpServletRequest request){
+		Page<HosTradeListVo> page = new Page<HosTradeListVo>();
+		List<HosTradeListVo> list = new ArrayList<HosTradeListVo>();
+		page.setRows(list);
+		page.setTotal(0);
+		String userId = request.getParameter("userId");//用户id
+		String offset =  request.getParameter("offset");//分页开始
+		String limit =  request.getParameter("limit");//分页数量
+		// 查询交易记录
+		HosTradeListDto dto = new HosTradeListDto();
+		dto.setUserId(StringUtil.isEmpty(userId) ? 0L : Long.valueOf(userId));
+		dto.setOffset(StringUtil.isEmpty(offset) ? 0 : Integer.valueOf(offset));
+		dto.setLimit(StringUtil.isEmpty(limit) ? 0 : Integer.valueOf(limit));
+		CKResponse cKResponse = hosTradeListService.listPagingObjects(dto);
+		if (ConstantApi.ERROR_CODE.SUCCESS.equals(cKResponse.getErrorCode())) {
+			page = (Page<HosTradeListVo>) cKResponse.getObjPage();
+		}
+		return page;
 	}
 	
 	/**

@@ -3,11 +3,11 @@
 <mapper namespace="io.eoshos.core.provider.dao.HosUserAccountTransMapper">
 
 	<sql id="Base_Column_List">
-		id,user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,gmt_created,gmt_modified
+		id,user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,notes,gmt_created,gmt_modified
 	</sql>
 	
 	<sql id="Insert_Column_List">
-		user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,gmt_created,gmt_modified
+		user_id,dc_flag,trans_type,other_user_id,coin_number,coin_bal,stat,notes,gmt_created,gmt_modified
 	</sql>
 
 	<insert id="insert" parameterType="io.eoshos.core.api.bean.po.HosUserAccountTrans"
@@ -15,7 +15,7 @@
 		insert into hos_user_account_trans (
 		<include refid="Insert_Column_List" />
 		) values (
-		#{userId},#{dcFlag},#{transType},#{otherUserId},#{coinNumber},#{coinBal},#{stat},unix_timestamp(sysdate()),unix_timestamp(sysdate())
+		#{userId},#{dcFlag},#{transType},#{otherUserId},#{coinNumber},#{coinBal},#{stat},#{notes},unix_timestamp(sysdate()),unix_timestamp(sysdate())
 		)
 	</insert>
 
@@ -43,6 +43,9 @@
 			</if>
 			<if test="stat != null">
 				stat = #{stat},
+			</if>
+			<if test="notes != null">
+				notes = #{notes},
 			</if>
 		</set>
 		where 1=1

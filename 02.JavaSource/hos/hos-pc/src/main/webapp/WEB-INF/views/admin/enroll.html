@@ -32,7 +32,7 @@
 						<li><input type="text" name="inviteCode" placeholder="${common9}" id="inviteCode"/></li>
 						<div class="tips"></div>
 						<p class="check"><input type="checkbox" id="check" name="check" checked="checked"/><label for="check">${common15}</label><a href="javascript:;" class="xy">${common16}</a></p>
-						<p class="btn"><input class="login" type="submit" value="${common10}" onclick="doSubmit()"><a href="/login/login.html?lang=" class="land">${common11}</a></p>
+						<p class="btn"><input class="login" id="indexSubmit" type="submit" value="${common10}" onclick="doSubmit()"><a href="/login/login.html?lang=" class="land">${common11}</a></p>
 					</ul>	
 				</form>
 			</div>
@@ -234,8 +234,10 @@ When the Agreement (including rules) is changed, you expressly declare and notif
 						localLang = 'zh';
 					}
 					var storage = window.localStorage;
-					storage.setItem("localLang", localLang);					
-					window.location.href="/enroll/index.html?lang=" + localLang ;
+					storage.setItem("localLang", localLang);
+					var inviteCode = $("#inviteCode").val();
+					window.location.href="/enroll/index.html?lang=" + localLang + 
+						(inviteCode == '' ? "" : "&inviteCode=" + inviteCode);	
 			})
 			
 			//倒计时
@@ -287,6 +289,7 @@ When the Agreement (including rules) is changed, you expressly declare and notif
 			
 			
 			function doSubmit() {
+				$('#indexSubmit').removeAttr('onclick');//去掉点击事件
 				if ($('#phone').val()==""){
 					return;
 				}
@@ -357,6 +360,7 @@ When the Agreement (including rules) is changed, you expressly declare and notif
 			        	 		var msg = (lang == 'en'?"Registration failed<br>Please try again later" : "註冊失敗，請稍後重試！");
 			        	 		$(".tips").html(msg);
 			        	 	}
+							$('#indexSubmit').attr("onclick","doSubmit()");
 						}
 					}
 				});

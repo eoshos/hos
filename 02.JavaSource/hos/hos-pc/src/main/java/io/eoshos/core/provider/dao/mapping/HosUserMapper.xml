@@ -16,7 +16,7 @@
 		useGeneratedKeys="true" keyProperty="id">
 		insert into hos_user (<include refid="Insert_Column_List" />) values 
 		(
-		#{userType},#{phone},#{userName},#{password},#{cardId},#{realName},#{picPath1},
+		#{userType},#{phone},#{userName},#{password},TRIM(#{cardId}),TRIM(#{realName}),#{picPath1},
 		#{picPath2},#{picPath3},#{realStat},#{authTime},#{eosWallet},#{inviteUserId},
 		#{inviteCode},#{stat},#{operIp},unix_timestamp(sysdate()),unix_timestamp(sysdate())
 		)

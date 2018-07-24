@@ -34,10 +34,10 @@
 				<h2><a id="guidance" href="/homepage/index.html?lang=">${verification_11}</a>><a>${verification_0}</a> </h2>
 				<form action="" id="real">
 					<div>
-					    <label for="name">${verification_4}</label><input type="text" id="realName" name="name" value="${realName}" readonly="readonly" style="border:none"/>
+					    <label for="name">${verification_4}</label><input type="text" id="realName" name="name" readonly="readonly" style="border:none"/>
 					</div>
 					<div>
-						<label for="idnum">${verification_5}</label><input type="text" id="cardId" name="idnum" value="${cardId}" readonly="readonly" style="border:none"/>
+						<label for="idnum">${verification_5}</label><input type="text" id="cardId" name="idnum" readonly="readonly" style="border:none"/>
 					</div>
 					<div class="file">
 						<label for="pics" style="vertical-align: top;padding-top: 15px;">${verification_6}</label>
@@ -172,8 +172,8 @@
 				back();
 			})
 			
-			$("#realName").val(hideMessage($("#realName").val(),1,0));
-			$("#cardId").val(hideMessage($("#cardId").val(),2,2));
+			$("#realName").val(hideMessage('${realName}',1,0));
+			$("#cardId").val(hideMessage('${cardId}',2,2));
 			language($("#guidance"));
 		</script>
 	</body>

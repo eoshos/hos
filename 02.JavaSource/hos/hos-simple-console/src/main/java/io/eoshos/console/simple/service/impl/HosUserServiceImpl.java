@@ -254,6 +254,9 @@ public class HosUserServiceImpl implements IHosUserService {
 		HosUserAccountTransVo hosUserAccountTransVo = null;
 		try {
 			hosUserAccountTransVo = hosUserAccountTransMapper.getFirstObject(hosUserAccountTransDto);
+			if (null == hosUserAccountTransVo){
+				throw new ExceptionNullUpdate(hosUserAccountTransDto.toString());
+			}
 		} catch (SQLException e3) {
 			logger.error("查询注册奖励币数失败:" + hosUserAccountTransDto.toString() + e3.getMessage());
 			cKResponse.setErrorCode(ConstantApi.ERROR_CODE.ERROR);
@@ -270,6 +273,9 @@ public class HosUserServiceImpl implements IHosUserService {
 		HosUserAccountVo hosUserAccountVo;
 		try {
 			hosUserAccountVo = hosUserAccountMapper.getObject(hosUserAccountDto);
+			if (null == hosUserAccountVo){
+				throw new ExceptionNullUpdate(hosUserAccountDto.toString());
+			}
 		} catch (SQLException e2) {
 			logger.error("查询认证人失败:" + hosUserAccountDto.toString() + e2.getMessage());
 			cKResponse.setErrorCode(ConstantApi.ERROR_CODE.ERROR);
@@ -396,6 +402,9 @@ public class HosUserServiceImpl implements IHosUserService {
 			//hosUserInviteVo = null;
 			try {
 				hosUserInviteVo = hosUserInviteMapper.getObject(hosUserInviteDto);
+				if (null == hosUserInviteVo){
+					throw new ExceptionNullUpdate(hosUserInviteDto.toString());
+				}				
 			} catch (SQLException e2) {
 				logger.error("查询邀请者出错:" + hosUserInviteDto.toString() + e2.getMessage());
 				cKResponse.setErrorCode(ConstantApi.ERROR_CODE.ERROR);

@@ -18,13 +18,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.chuangke18.framework.api.bean.Page;
@@ -53,6 +53,10 @@ import net.coobird.thumbnailator.Thumbnails;
 public class DepositController {
 	
 	private static Logger logger = LoggerFactory.getLogger(DepositController.class);
+	
+	//取自于application*.properties
+    @Value("${eoshosWebsite.root}")
+    private String eoshosWebsiteRoot; 
 	
 	@Autowired
 	protected HttpServletResponse response;	
@@ -97,6 +101,7 @@ public class DepositController {
     	model.addAttribute("cardId", cardId);
     	model.addAttribute("realName", realName);
     	model.addAttribute("gmtModified", gmtModified);
+    	model.addAttribute("eoshosWebsiteRoot", eoshosWebsiteRoot);
     	return "deposit/authing";
     }    
        

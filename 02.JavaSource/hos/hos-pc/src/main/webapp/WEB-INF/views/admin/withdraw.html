@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>EOSHOS</title>		
+		<#include "/admin/common/top.html">
+	</head>
+	<body style="background: #f5f6fa;">
+		<div class="landedHeader">
+			<div class="wrap">
+				<img src="/static/images/logo.png" alt="" />
+				<ul>
+					<li>${homepage_1_1}</li>
+					<li onclick="downloadWhitePaper()">${common4}</li>				
+					<li class="zh">
+						${userName} <span></span>
+						<div>
+							<a href="javascript:;" onclick="back()">${homepage_1_2}</a>
+							<a href="javascript:;" onclick="jumpLogout()">${homepage_1_3}</a>
+						</div>
+					</li>
+					<li class="lang">
+						<#if localLang??&&localLang=='en'>English<#else>繁體中文</#if> <span></span>
+						<div>
+							<a href="javascript:;" onclick="switchLanguage('en')">English</a>
+							<a href="javascript:;" onclick="switchLanguage('zh')">繁體中文</a>
+						</div>
+					</li>
+				</ul>					
+			</div>
+		</div>
+		<div class="wrap">
+			<div class="con4 con6">
+				<h2><a id="guidance" href="/homepage/index.html?lang=">${homepage_1_2}</a>><a>${withdraw_1}</a><span class="errorcode"></span></h2>
+				<div>
+					<div class="tab">
+					    <a href="javascript:" class="active">${withdraw_6}</a><a href="javascript:">${withdraw_7}</a>						
+					</div>
+					<form action="" id="withdraw" autocomplete="off">
+						<div class="getall">
+							<label>${withdraw_8}</label><span id="coinAvailable">${coinAvailable}</span>HOS
+						</div>
+						<div>
+							<label for="eosAccount">${withdraw_9}</label>
+							<input type="text" placeholder="${withdraw_10}" id="eosAccount" name="eosAccount" maxlength="12"/>
+						</div>
+						<div class="tag">
+							<label for="exchangeAccount">${withdraw_14}</label>
+							<input type="text" placeholder="${withdraw_16}" id="exchangeAccount" name="exchangeAccount"/>
+						</div>
+						<div class="coinNumber">
+							<label for="coinNumber">${withdraw_11}</label>
+							<input type="text" placeholder="${withdraw_12}" id="coinNumber" name="coinNumber" min="10"/><span>HOS</span><a href="javascript:" class="all">${withdraw_13}</a>
+						</div>
+						<input type="submit" value="${withdraw_1}" class="submit" />
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="blk2">
+				<div class="record2">
+					<span class="shut clos"><img src="/static/images/shut.png" alt="" /></span>
+					<div class="tips tips2">
+						<h3>${withdraw_23}</h3>
+						<p><input type="text" placeholder="${common6_2}" id="valicode" name="valicode" maxlength="4" autocomplete="off"/><img id="codeImg" src="/login/validimg.html" onclick="this.src='/login/validimg.html?t=' + Math.random();" alt="${common6_5}"/></p>
+						<p><input type="text" placeholder="${common6_4}" id="phonecode" name="phonecode" maxlength="11"/><a href="javascript:" class="checktime" onclick="getPhoneCode()">${withdraw_24}</a><span class="error"></span></p>													
+						<a href="javascript:" onclick="withDraw()">${withdraw_25}</a>
+					</div>
+					<div class="tips tips1">
+						<h3>${withdraw_4}</h3>
+						<p>${withdraw_27}</p>
+						<a href="javascript:" onclick="back()">${withdraw_29}</a>
+					</div>
+				</div>
+			</div>
+		<script>
+			//$(".blk2").css("display","table")
+			var accountType = '1';
+			function getPhoneCode(){
+				if($("input[name=valicode]").val()==""){
+					$(".tips2 .error").html("${common31}").fadeIn().delay(1000).fadeOut();						
+					return
+				}
+				var countDown = 60;
+				$.ajax({  
+			         url: "/enroll/validationcode?phone=" + ${userName} + "&valicode=" + $('#valicode').val(),
+			         type: 'POST',  
+			         //data: form,  
+			         async: true,  
+			         cache: false,  
+			         contentType: false,  
+			         processData: false,  
+			         success: function (data) {  
+			        	 console.log(data);
+			        	 data=JSON.parse(data);
+			        	 if(data.errorCode == '0000'){
+			        		 console.log(data.errorMsg);
+			        		 $('.checktime').html(countDown + '${common17}').addClass("hui");
+			 				var timer = setInterval(function() {
+			 					countDown--;
+			 					if (countDown) {
+			 						$('.checktime').html(countDown + '${common17}');
+			 					} else {
+			 						clearInterval(timer);
+			 						$('.checktime').html('${withdraw_24}').removeClass("hui").bind("click",getPhoneCode);
+			 					}
+			 				}, 1000);
+			        	 }else{
+			        	 	console.log(data.errorCode);
+			        	 	if(data.errorCode == '9998'){
+			        	 		$(".tips2 .error").html("${common30}").fadeIn().delay(1000).fadeOut();	
+			        	 	}else if(data.errorCode == '9993'){
+			        	 		$(".tips2 .error").html("${common35}").fadeIn().delay(1000).fadeOut();	
+			        	 	}else if(data.errorCode == '9992'){
+			        	 		$(".tips2 .error").html("${common36}").fadeIn().delay(1000).fadeOut();	
+			        	 	}
+			        	 }
+			         },  
+			         error: function (data) {  
+			        	  
+			         }  
+			   });
+			}
+			
+			var mon=parseInt($(".getall span").html());
+			$(".all").click(function(){				
+				$("input[name=coinNumber]").val(mon)
+			})
+			
+			 $(".clos").click(function(){
+				   $(".blk2").hide();
+			   })
+			$(".tab a").click(function(){
+				$(this).addClass("active").siblings().removeClass("active");
+			})
+			$(".tab a:first-child").click(function(){
+				$(".tag").hide();
+				accountType = '1';
+				$('#exchangeAccount').val('-1');
+			})
+			$(".tab a:nth-child(2)").click(function(){
+				$(".tag").show();
+				accountType = '2';
+				$('#exchangeAccount').val('');
+			})
+			$(".zh,.lang").hover(function(){
+				$(this).find("div").show()
+			},function(){
+				$(this).find("div").hide()
+			})
+			
+			function num(obj){
+		    	var n=parseFloat(obj.html());
+		    	var n1=numFormat(n);
+		    	obj.html(n1)
+		    }
+			
+			num($("#coinAvailable"));
+			
+			function switchLanguage(language){
+				var storage = window.localStorage;
+				storage.setItem("localLang", language);					
+				window.location.href="/homepage/withdraw?lang="+language;
+			}	
+
+			function downloadWhitePaper(){
+				var storage = window.localStorage;
+				var lang = storage.getItem("localLang");
+		    	location.href="/login/downloadwhitepaper?language="+lang;
+		  }			
+			jQuery.validator.addMethod("isUser", function(value, element) {   
+			    var user = /^([1-5a-z]{12})+$/;
+			    return this.optional(element) || (user.test(value));
+			}, "${withdraw_18}");
+			jQuery.validator.addMethod("isTag", function(value, element) {   
+			    var user = /^(\w)+$/;
+			    return this.optional(element) || (user.test(value));
+			}, "${withdraw_19}");
+			$("#withdraw").validate({
+				errorElement:"span",
+				errorContainer: "span.errorcode",
+				errorLabelContainer: $(".con6 span.errorcode"),
+				debug:true,
+			    rules: {
+			      eosAccount:{
+			      	required:true,
+			      	isUser:true
+			      },
+			      exchangeAccount:{
+			      	required:true,
+			      	isTag:true
+			      },
+			      coinNumber:{
+			      	required:true,
+			      	max:mon,
+			      	min:10
+			      }
+			     },
+			     messages: {
+			      eosAccount:{
+			      	required:"${withdraw_17}",
+			        isUser:"${withdraw_18}"
+			      },
+			       exchangeAccount:{
+			      	required:"${withdraw_16}",
+			        isUser:"${withdraw_19}"
+			      },
+			      coinNumber:{
+			      	required:"${withdraw_20}",
+			      	max:"${withdraw_22}",
+			      	min:"${withdraw_12}"
+			      }
+			     },
+			     showErrors:function(errorMap,errorList){
+                   if(errorList.length!=0){
+                      $(".con6 span.errorcode").empty().text(errorList[0].message);
+                       }
+              },
+              submitHandler : function(form) {
+                   $(".blk2").css("display","table");
+                   $(".tips").hide();
+                   $(".tips2").show()
+              }
+			})
+			function jumpLogout(){
+				var storage = window.localStorage;
+				var lang = storage.getItem("localLang");
+				window.location.href="/login/logOut.html?lang="+lang;
+			}	
+			
+			function back(){
+				location='/homepage/index.html?lang='+window.localStorage.getItem("localLang");
+			}
+			
+			language($("#guidance"));
+			
+			function withDraw(){
+				var valicode = $('#valicode').val();
+				var phonecode = $('#phonecode').val();
+				var eosAccount = $('#eosAccount').val();
+				var exchangeAccount = $('#exchangeAccount').val();
+				var coinNumber = $('#coinNumber').val();
+				if (valicode==""){
+					$(".tips2 .error").html('${common31}').fadeIn().delay(1000).fadeOut();
+					return;
+				}
+				if (phonecode==""){
+					$(".tips2 .error").html('${common32}').fadeIn().delay(1000).fadeOut();
+					return;
+				}
+				var form = new FormData();
+				form.append("phonecode", $('#phonecode').val());
+				form.append("hosTradeCoinToChain.eosAccount", $('#eosAccount').val());
+				form.append("hosTradeCoinToChain.exchangeAccount", $('#exchangeAccount').val());
+				form.append("hosTradeCoinToChain.coinNumber", $(
+						'#coinNumber').val());
+				form.append("hosTradeCoinToChain.accountType", accountType);
+				console.log(form);
+				$.ajax({
+					url : "/asset/withdraw",
+					type : "post",
+					data : form,
+					processData : false,
+					contentType : false,
+					success : function(data) {
+						data=JSON.parse(data);
+						var storage = window.localStorage;
+						if(data.errorCode == '0000'){
+							var lang = storage.getItem("localLang");
+							$(".blk2").css("display","table");
+			                $(".tips").hide();
+							$(".tips1").show();
+						}else{
+							if(data.errorCode == '9991'){
+								$(".tips2 .error").html('${common37}').fadeIn();
+			        	 	}else if(data.errorCode == '9982'){
+			        	 		$(".tips2 .error").html('${homepage_37}').fadeIn();
+			        	 	}else if(data.errorCode == '9981'){
+			        	 		$(".tips2 .error").html('${withdraw_21}').fadeIn();
+			        	 	}else if(data.errorCode == '9980'){
+			        	 		$(".tips2 .error").html('${withdraw_22}').fadeIn();
+			        	 	}else{
+			        	 		$(".tips2 .error").html('${withdraw_28}').fadeIn();
+			        	 	}
+					        $(".tips2 .error").delay(1000).fadeOut();
+						}
+					}
+				});
+			}
+			
+		</script>
+	</body>
+</html>

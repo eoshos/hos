@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.eoshos.core.provider.dao.HosTradeCoinToChainMapper">
+
+	<sql id="Base_Column_List">
+		id,user_id,user_account_id,phone,account_type,eos_account,exchange_account,coin_number,stat,apply_time,audit_time,audit_desc,notes,gmt_created,gmt_modified
+	</sql>
+
+	<sql id="Insert_Column_List">
+		user_id,user_account_id,phone,account_type,eos_account,exchange_account,coin_number,stat,apply_time,audit_time,audit_desc,notes,gmt_created,gmt_modified
+	</sql>
+
+	<insert id="insert" parameterType="io.eoshos.core.api.bean.po.HosTradeCoinToChain"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into hos_trade_coin_to_chain (
+		<include refid="Insert_Column_List" />
+		) values (
+		#{userId},#{userAccountId},#{phone},#{accountType},#{eosAccount},#{exchangeAccount},#{coinNumber},#{stat},unix_timestamp(sysdate()),0,#{auditDesc},#{notes},unix_timestamp(sysdate()),unix_timestamp(sysdate())
+		)
+	</insert>
+	
+	<update id="update" parameterType="io.eoshos.core.api.bean.po.HosTradeCoinToChain">
+		update hos_trade_coin_to_chain
+		<set>
+			gmt_modified = unix_timestamp(sysdate()),
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="userAccountId != null">
+				user_account_id = #{userAccountId},
+			</if>
+			<if test="phone != null">
+				phone = #{phone},
+			</if>
+			<if test="accountType != null">
+				account_type = #{accountType},
+			</if>
+			<if test="eosAccount != null">
+				eos_account = #{eosAccount},
+			</if>
+			<if test="exchangeAccount != null">
+				exchange_account = #{exchangeAccount},
+			</if>
+			<if test="coinNumber != null">
+				coin_number = #{coinNumber},
+			</if>
+			<if test="stat != null">
+				stat = #{stat},
+			</if>
+			<if test="applyTime != null">
+				apply_time = #{applyTime},
+			</if>
+			<if test="auditTime != null">
+				audit_time = #{auditTime},
+			</if>
+			<if test="auditDesc != null">
+				audit_desc = #{auditDesc},
+			</if>
+			<if test="notes != null">
+				notes = #{notes},
+			</if>
+		</set>
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="userAccountId != null">
+			and user_account_id = #{userAccountId}
+		</if>
+	</update>
+	
+	<delete id="delete" parameterType="io.eoshos.core.api.bean.dto.HosTradeCoinToChainDto">
+		delete from hos_trade_coin_to_chain 
+		where id = #{id}
+	</delete>
+	
+	<select id="getObject" parameterType="io.eoshos.core.api.bean.dto.HosTradeCoinToChainDto"
+		resultType="io.eoshos.core.api.bean.vo.HosTradeCoinToChainVo">
+		select
+		<include refid="Base_Column_List" />
+		from hos_trade_coin_to_chain
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="userAccountId != null">
+			and user_account_id = #{userAccountId}
+		</if>
+
+	</select>
+	
+	<select id="listAllObjects" parameterType="io.eoshos.core.api.bean.dto.HosTradeCoinToChainDto"
+		resultType="io.eoshos.core.api.bean.vo.HosTradeCoinToChainVo">
+		select
+		<include refid="Base_Column_List" />,FROM_UNIXTIME(gmt_created, '%Y-%m-%d %H:%i:%S') as gmtCreatedStr 
+		from hos_trade_coin_to_chain
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="userAccountId != null">
+			and user_account_id = #{userAccountId}
+		</if>
+		order by id desc
+
+	</select>
+	
+	
+	<select id="listPagingObjects" parameterType="io.eoshos.core.api.bean.dto.HosTradeCoinToChainDto"
+		resultType="io.eoshos.core.api.bean.vo.HosTradeCoinToChainVo">
+		select
+		<include refid="Base_Column_List" />,FROM_UNIXTIME(gmt_created, '%Y-%m-%d %H:%i:%S') as gmtCreatedStr 
+		from hos_trade_coin_to_chain
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="userAccountId != null">
+			and user_account_id = #{userAccountId}
+		</if>
+		order by id desc
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="countObjects" parameterType="io.eoshos.core.api.bean.dto.HosTradeCoinToChainDto"
+		resultType="java.lang.Integer">
+		select count(id) from hos_trade_coin_to_chain
+		where 1=1
+		<if test="id != null">
+			and id = #{id}
+		</if>
+		<if test="userId != null">
+			and user_id = #{userId}
+		</if>
+		<if test="userAccountId != null">
+			and user_account_id = #{userAccountId}
+		</if>
+	</select>
+	
+</mapper>

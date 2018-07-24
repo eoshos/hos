@@ -70,6 +70,55 @@
 	           		photoCompress(fileObj, {quality:scale,width:800},obj);
 	            }
 	        }
+			
+			function checkForm(name){
+				var msg='';
+				var _this=$('[name = '+name+']');
+				var val=_this.val().replace(/\s+/g,"");
+				var card = /^(^\d{18}$|^\d{17}(\d|X|x|y|Y))$/;
+				var user=/^([1-5a-z]{12})+$/;
+			    var tag=/^(\w)+$/;
+				var result=false;
+				if(val==''){
+					switch(name)
+					{
+					    case 'realName':
+					        msg='${verification_20}';	
+					        break;
+					    case 'cardId':
+					        msg='${verification_21}';	
+					        break;
+					    case 'faceupFileVal':
+					        msg='${verification_18}';	
+					        break; 
+					    case 'identityupFileVal':
+					        msg='${verification_19}';	
+					        break;
+					}
+					if(!result){
+						console.log(name+'----'+msg);
+						ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					}
+				}else{
+					switch(name)
+					{
+					    case 'cardId':
+					        if(card.test(val)){
+					    		result=true;
+					    	}else{
+					    		msg='${verification_1}';	
+					    	}
+					        break;
+					    default:
+							return true;   
+					}
+					if(!result){
+						ck.msg({'content':msg,'time':1,'shade':false,'styleName':'msgWrite'});
+					}
+				}
+				return result;
+			}
+			
 			function doSubmit(){
 				if(!(checkForm('realName') && checkForm('cardId') && checkForm('faceupFileVal') && checkForm('identityupFileVal'))){
 					return;
@@ -108,10 +157,10 @@
 	    	         contentType: false,  
 	    	         processData: false,  
 	    	         success: function (data) {  
-	    	        	 ck.msg({'content':'${verification_9}','time':3,'shade':false,'styleName':'msgWrite'});	    	        	
 	    	        	 data=JSON.parse(data);
 	    	        	 if(data.errorCode == '0000'){
-	    	        		 location='/homepage/index.html?devtype=wap&lang='+window.localStorage.getItem("localLang");
+	    	        	 	ck.msg({'content':'${verification_9}','time':3,'shade':false,'styleName':'msgWrite'});	    	        	
+	    	        		location='/homepage/index.html?devtype=wap&lang='+window.localStorage.getItem("localLang");
 	    	        	 }else{
 	    	        		 if(data.errorCode == '9985'){
 	    	        			 ck.msg({'content':'${verification_2}','time':3,'shade':false,'styleName':'msgWrite'});	 
